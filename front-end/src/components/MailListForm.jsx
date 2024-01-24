@@ -16,7 +16,7 @@ function MailListForm() {
       validationSchema={validationSchema}
       onSubmit={(values, actions) => {
         axios
-          .post("http://localhost:3001/add-contact", {
+          .post(`${process.env.BACKEND_URL}/add-contact`, {
             email: values.email,
             first_name: values.first_name,
             last_name: values.last_name,
