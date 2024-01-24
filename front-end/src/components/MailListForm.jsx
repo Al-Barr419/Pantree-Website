@@ -1,6 +1,7 @@
 import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
 
 const validationSchema = Yup.object().shape({
   first_name: Yup.string().required("First name is required"),
@@ -14,26 +15,15 @@ function MailListForm() {
       initialValues={{ first_name: "", last_name: "", email: "" }}
       validationSchema={validationSchema}
       onSubmit={(values, actions) => {
-        // handle form submission
-        // fetch("http://localhost:3001/subscribe", {
-        //   // backend API endpoint
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(values),
-        // })
-        //   .then((response) => response.json())
-        //   .then((data) => {
-        //     // Handle success, perhaps clear the form or give user feedback
-        //     actions.setSubmitting(false);
-        //     actions.resetForm();
-        //     console.log("Success:", data);
-        //   })
-        //   .catch((error) => {
-        //     // Handle errors here, such as by setting a form error or notification
-        //     console.error("Error:", error);
-        //   });
+        axios
+          .post("http://localhost:3001/add-contact", {
+            email: values.email,
+            first_name: values.first_name,
+            last_name: values.last_name,
+          })
+          .then((response) => console.log(response.data))
+          .catch((error) => console.error("Error:", error));
+
         console.log(values);
         actions.setSubmitting(false);
       }}
