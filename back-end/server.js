@@ -27,6 +27,9 @@ app.post("/add-contact", (req, res) => {
     return res.status(400).send("Missing required fields");
   }
 
+  // Pantree mailing list id from sendgrid
+  const list_id = "5a868631-6949-488d-94b6-7a76469423d4";
+
   const data = {
     contacts: [
       {
@@ -35,6 +38,7 @@ app.post("/add-contact", (req, res) => {
         last_name,
       },
     ],
+    list_ids: [list_id],
   };
 
   const request = {
