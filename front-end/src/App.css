@@ -60,12 +60,20 @@ body, html {
 .buttons button {
   padding: 10px 20px; /* Add padding inside the buttons */
   border: none; /* Remove default border */
-  border-radius: 5px; /* Slightly round corners */
-  font-size: 18px; /* Font size for button text */
+  border-radius: 20px; /* Increase the value for more rounded corners */
+  font-size: 30px; /* Font size for button text */
   cursor: pointer; /* Cursor to pointer to indicate button */
-  margin: 10px; /* Space out the buttons */
+  margin: 40px; /* Space out the buttons */
+  color: rgba(0, 83, 109, 1);
+  font-weight: bold; /* Make only the button text bold */
 }
 
+.button-subtext {
+  display: block; /* makes the text appear on a new line, if br isn't sufficient */
+  font-size: 20px; /* smaller font size for the second line */
+  color: rgba(0, 83, 109, 1);
+  font-weight: normal; /* Ensure subtext is not bold */
+}
 /* Chrome Extension Button Styles */
 .chrome-extension {
   background-color: #F1FCFF;

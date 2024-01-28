@@ -13,8 +13,14 @@ const LandingPage = () => {
         </div>
       </div>
       <div className="buttons">
-        <button className="chrome-extension">INSTALL CHROME EXTENSION</button>
-        <button className="about-us">ABOUT US</button>
+        <button className="chrome-extension">
+          INSTALL CHROME EXTENSION<br />
+          <span className="button-subtext">Your automatic fridge management app</span>
+        </button>
+        <button className="about-us">
+          ABOUT US<br />
+          <span className="button-subtext">Built by students</span>
+        </button>
       </div>
       <ul className="benefits">
         <li>Receive notifications when your produce is about to expire.</li>
