@@ -1,38 +1,104 @@
-.App {
-  text-align: center;
+/* General Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif; /* Use a web-safe font */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Landing Page Styles */
+.landing-page {
+  text-align: center; /* Center content */
+  padding: 50px 0; /* Add padding at the top and bottom */
+  background:#F1FCFF; /* Set a background color */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Pantree Logo Styles */
+.logo {
+  max-width: 50%; /* Ensures the image is responsive and fits its container */
+  height: auto; /* Keeps the image aspect ratio */
+  display: block; /* Will treat the image as a block-level element */
+  margin: 0 auto; /* Automatically calculates equal left and right margins to center the logo */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Container Styles */
+.fruits-container {
+  position: relative; /* Create a positioning context */
+  max-width: 100%; /* Container fits its parent */
+  margin: 0 auto; /* Centers the container */
 }
 
-.App-link {
-  color: #61dafb;
+/* Fruits Image Styles */
+.fruits {
+  width: 100%; /* Make the image fill the container */
+  height: auto; /* Maintain aspect ratio */
+  position: absolute; /* Position it absolutely within the container */
+  top: 0; /* Align to the top of the container */
+  left: 0; /* Align to the left of the container */
+  z-index: 1; /* Ensure it's behind the text */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Text Overlay Styles */
+.text-overlay {
+  position: absolute; /* Position the text absolutely within the container */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Offset the position by half of the text element's width and height */
+  z-index: 2; /* Ensure the text is on top of the image */
+  color: white; /* Text color that contrasts with the fruits image */
+  /* Add more styling for the text as needed */
+}
+
+/* Tagline Styles */
+.tagline {
+  font-size: 24px; /* Font size for the tagline */
+  color: #004a7c; /* Color for the tagline text */
+  margin: 20px 0; /* Space out the tagline from the title */
+  /* Remove other tagline styles that conflict with text-overlay */
+}
+
+/* Button Styles */
+.buttons button {
+  padding: 10px 20px; /* Add padding inside the buttons */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Slightly round corners */
+  font-size: 18px; /* Font size for button text */
+  cursor: pointer; /* Cursor to pointer to indicate button */
+  margin: 10px; /* Space out the buttons */
+}
+
+/* Chrome Extension Button Styles */
+.chrome-extension {
+  background-color: #F1FCFF;
+  color: #003A4D66;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Horizontal offset, vertical offset, blur radius, and color */
+
+}
+
+/* About Us Button Styles */
+.about-us {
+  background-color: #F1FCFF;
+  color: #003A4D66;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Horizontal offset, vertical offset, blur radius, and color */
+}
+
+/* Benefits List Styles */
+.benefits {
+  list-style: none; /* Remove default list styling */
+  padding: 0; /* Remove default padding */
+  color: #333; /* Text color for the list items */
+  font-size: 18px; /* Font size for list items */
+  text-align: left; /* Align text to the left */
+  display: inline-block; /* Align list in the center of the page */
+  margin-top: 50px; /* Space out the list from the buttons */
+}
+
+.benefits li {
+  margin: 10px 0; /* Margin between list items */
+}
+
+/* Mail List Form Styles */
+/* Add styles for your MailListForm component */
+.mail-list-form {
+  margin-top: 50px; /* Space out the form from the list */
+  /* More styles here depending on the design of your MailListForm */
 }
