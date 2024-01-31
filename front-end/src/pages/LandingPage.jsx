@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import MailListForm from '../components/MailListForm';
 
+const Footer = () => {
+  return (
+    <footer className="bg-[#f1fcff] text-[#00566E] text-center p-4">
+      <p className="text-sm">Receive notifications when your produce is about to expire.</p>
+      <p className="text-sm">No more losing track of ingredients.</p>
+      <p className="text-sm">No more food waste.</p>
+      <p className="text-sm">&copy; {new Date().getFullYear()} Pantree. All rights reserved.</p>
+    </footer>
+  );
+};
+
 const LandingPage = () => {
   const [showFormOnly, setShowFormOnly] = useState(false);
 
@@ -22,37 +33,32 @@ const LandingPage = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-screen'>
+    <div className='flex flex-col h-screen'>
       {showFormOnly && (
         <div style={overlayStyle}>
           <MailListForm />
         </div>
       )}
       {!showFormOnly && (
-        <div className="flex flex-col">
-          <div className='flex justify-center'>
-          <img src="/Logo.png" alt="Pantree Logo" width={400} height={400} />
-          </div>
-          <p className="text-xl text-[#00566E] text-center pt-3.5 font-anekTelugu">Saving those blueberries you forgot about</p>
-          <div className="flex justify-center gap-10 py-20">
-            <div>
-            <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow" onClick={handleButtonClick}>
-              INSTALL CHROME EXTENSION<br />
-              <span className="text-2xl text-[#00536D] font-anekTelugu">Your automatic fridge management app</span>
-            </button>
+        <div className="flex flex-col flex-grow">
+          <div className='flex flex-col justify-center items-center flex-grow'>
+            <img src="/Logo.png" alt="Pantree Logo" width={500} height={500} />
+            <p className="text-xl text-[#00566E] text-center pt-3.5 font-anekTelugu">Saving those blueberries you forgot about</p>
+            <div className="flex justify-center gap-10 py-20">
+              <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow" onClick={handleButtonClick}>
+                INSTALL CHROME EXTENSION<br />
+                <span className="text-2xl text-[#00536D] font-anekTelugu">Your automatic fridge management app</span>
+              </button>
+              <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow">
+                ABOUT US<br />
+                <span className="text-2xl text-[#00536D] font-anekTelugu">Built by students</span>
+              </button>
             </div>
-            <button className="text-5xl text-[#00536D] font-koulen  bg-[#DFF4FA4D] rounded-3xl p-11 shadow">
-              ABOUT US<br />
-              <span className="text-2xl text-[#00536D] font-anekTelugu">Built by students</span>
-            </button>
+            {/* Additional content here */}
           </div>
-          {/* <ul className="benefits">
-            <li>Receive notifications when your produce is about to expire.</li>
-            <li>No more losing track of ingredients.</li>
-            <li>No more food waste.</li>
-          </ul> */}
         </div>
       )}
+      <Footer />
     </div>
   );
 };
