@@ -4,9 +4,9 @@ import MailListForm from '../components/MailListForm';
 const Footer = () => {
   return (
     <footer className="bg-[#f1fcff] text-[#00566E] text-center min-h-[300px] flex flex-col justify-center">
-      <p className="text-lg leading-relaxed mb-1">Receive notifications when your produce is about to expire.</p>
-      <p className="text-lg leading-relaxed mb-1">No more losing track of ingredients.</p>
-      <p className="text-lg leading-relaxed mb-1">No more food waste.</p>
+      <p className="text-lg leading-relaxed mb-6 font-anekTelugu">Receive notifications when your produce is about to expire.</p>
+      <p className="text-lg leading-relaxed mb-1 font-anekTelugu">No more losing track of ingredients.</p>
+      <p className="text-lg leading-relaxed mb-1 font-anekTelugu">No more food waste.</p>
     </footer>
   );
 };
