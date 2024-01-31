@@ -2,111 +2,124 @@
 body, html {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif; /* Use a web-safe font */
+  font-family: 'Arial', sans-serif; 
+  background: #F1FCFF;
 }
 
-/* Landing Page Styles */
 .landing-page {
-  text-align: center; /* Center content */
-  padding: 50px 0; /* Add padding at the top and bottom */
-  background:#F1FCFF; /* Set a background color */
+  text-align: center; 
+  padding: 50px 0; 
 }
 
-/* Pantree Logo Styles */
 .logo {
-  max-width: 50%; /* Ensures the image is responsive and fits its container */
-  height: auto; /* Keeps the image aspect ratio */
-  display: block; /* Will treat the image as a block-level element */
-  margin: 0 auto; /* Automatically calculates equal left and right margins to center the logo */
+  max-width: 50%; 
+  height: auto; 
+  display: block; 
+  margin: 0 auto; 
 }
 
 /* Container Styles */
 .fruits-container {
-  position: relative; /* Create a positioning context */
-  max-width: 100%; /* Container fits its parent */
-  margin: 0 auto; /* Centers the container */
+  position: relative; 
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: hidden; 
 }
 
 /* Fruits Image Styles */
 .fruits {
-  width: 100%; /* Make the image fill the container */
-  height: auto; /* Maintain aspect ratio */
-  position: absolute; /* Position it absolutely within the container */
-  top: 0; /* Align to the top of the container */
-  left: 0; /* Align to the left of the container */
-  z-index: 1; /* Ensure it's behind the text */
+  width: 100%;
+  height: auto;
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  z-index: 1;
 }
 
 /* Text Overlay Styles */
 .text-overlay {
-  position: absolute; /* Position the text absolutely within the container */
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Offset the position by half of the text element's width and height */
-  z-index: 2; /* Ensure the text is on top of the image */
-  color: white; /* Text color that contrasts with the fruits image */
-  /* Add more styling for the text as needed */
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  z-index: 2; 
+  color: white;
+  text-align: center; 
+  max-width: 90%; 
 }
 
 /* Tagline Styles */
 .tagline {
-  font-size: 24px; /* Font size for the tagline */
-  color: #004a7c; /* Color for the tagline text */
-  margin: 20px 0; /* Space out the tagline from the title */
-  /* Remove other tagline styles that conflict with text-overlay */
+  font-size: 24px; 
+  color: #004a7c; 
+  margin: 20px 0;
 }
 
 /* Button Styles */
 .buttons button {
-  padding: 10px 20px; /* Add padding inside the buttons */
-  border: none; /* Remove default border */
-  border-radius: 20px; /* Increase the value for more rounded corners */
-  font-size: 30px; /* Font size for button text */
-  cursor: pointer; /* Cursor to pointer to indicate button */
-  margin: 40px; /* Space out the buttons */
+  padding: 10px 20px; 
+  border: none; 
+  border-radius: 20px; 
+  font-size: 18px; 
+  cursor: pointer;
+  margin: 20px; 
   color: rgba(0, 83, 109, 1);
-  font-weight: bold; /* Make only the button text bold */
+  font-weight: bold; 
+  transition: background-color 0.3s ease; 
+}
+
+.buttons button:hover {
+  background-color: #ddeeff; 
 }
 
 .button-subtext {
-  display: block; /* makes the text appear on a new line, if br isn't sufficient */
-  font-size: 20px; /* smaller font size for the second line */
+  display: block; 
+  font-size: 16px;
   color: rgba(0, 83, 109, 1);
-  font-weight: normal; /* Ensure subtext is not bold */
+  font-weight: normal; 
 }
-/* Chrome Extension Button Styles */
-.chrome-extension {
+
+.chrome-extension, .about-us {
   background-color: #F1FCFF;
   color: #003A4D66;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Horizontal offset, vertical offset, blur radius, and color */
-
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
-/* About Us Button Styles */
-.about-us {
-  background-color: #F1FCFF;
-  color: #003A4D66;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Horizontal offset, vertical offset, blur radius, and color */
-}
-
-/* Benefits List Styles */
 .benefits {
-  list-style: none; /* Remove default list styling */
-  padding: 0; /* Remove default padding */
-  color: #333; /* Text color for the list items */
-  font-size: 18px; /* Font size for list items */
-  text-align: left; /* Align text to the left */
-  display: inline-block; /* Align list in the center of the page */
-  margin-top: 50px; /* Space out the list from the buttons */
+  list-style: none; 
+  padding: 0; 
+  color: #333; 
+  font-size: 18px; 
+  text-align: left; 
+  display: inline-block; 
+  margin-top: 50px;
+  max-width: 90%; 
 }
 
 .benefits li {
-  margin: 10px 0; /* Margin between list items */
+  margin: 10px 0; 
 }
 
-/* Mail List Form Styles */
-/* Add styles for your MailListForm component */
 .mail-list-form {
-  margin-top: 50px; /* Space out the form from the list */
-  /* More styles here depending on the design of your MailListForm */
+  margin-top: 50px; 
+  max-width: 90%; 
+}
+
+@media (max-width: 768px) {
+  .tagline {
+    font-size: 18px;
+  }
+  
+  .buttons button {
+    font-size: 16px;
+    padding: 8px 16px; 
+  }
+
+  .button-subtext {
+    font-size: 14px; 
+  }
+
+  .benefits {
+    font-size: 16px;
+  }
 }
