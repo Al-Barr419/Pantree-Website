@@ -24,7 +24,7 @@ const LandingPage = () => {
     left: 0,
     width: '100vw',
     height: '100vh',
-    backgroundColor: '#rgba(241, 252, 255, 1)',
+    backgroundColor: '#F1FCFF',
     zIndex: 1000,
     display: 'flex',
     alignItems: 'center',
