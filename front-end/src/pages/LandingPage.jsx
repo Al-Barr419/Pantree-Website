@@ -32,7 +32,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className='flex flex-col h-screen'>
+    <div className='flex flex-col h-screen bg-[url("/Users/keelyjoon/Documents/coding/pantree_website/Pantree-Website/front-end/public/Fruits.png")] bg-cover bg-center bg-no-repeat'>
       {showFormOnly && (
         <div style={overlayStyle}>
           <MailListForm />
@@ -53,7 +53,6 @@ const LandingPage = () => {
                 <span className="text-2xl text-[#00536D] font-anekTelugu">Built by students</span>
               </button>
             </div>
-            {/* Additional content here */}
           </div>
         </div>
       )}
