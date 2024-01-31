@@ -3,11 +3,10 @@ import MailListForm from '../components/MailListForm';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#f1fcff] text-[#00566E] text-center p-4">
-      <p className="text-sm">Receive notifications when your produce is about to expire.</p>
-      <p className="text-sm">No more losing track of ingredients.</p>
-      <p className="text-sm">No more food waste.</p>
-      <p className="text-sm">&copy; {new Date().getFullYear()} Pantree. All rights reserved.</p>
+    <footer className="bg-[#f1fcff] text-[#00566E] text-center min-h-[300px] flex flex-col justify-center">
+      <p className="text-lg leading-relaxed mb-1">Receive notifications when your produce is about to expire.</p>
+      <p className="text-lg leading-relaxed mb-1">No more losing track of ingredients.</p>
+      <p className="text-lg leading-relaxed mb-1">No more food waste.</p>
     </footer>
   );
 };
