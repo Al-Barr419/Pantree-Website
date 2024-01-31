@@ -44,13 +44,13 @@ const LandingPage = () => {
             <img src="/Logo.png" alt="Pantree Logo" width={500} height={500} />
             <p className="text-xl text-[#00566E] text-center pt-3.5 font-anekTelugu">Saving those blueberries you forgot about</p>
             <div className="flex justify-center gap-10 py-20">
-              <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow" onClick={handleButtonClick}>
-                INSTALL CHROME EXTENSION<br />
-                <span className="text-2xl text-[#00536D] font-anekTelugu">Your automatic fridge management app</span>
+              <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow-xl" onClick={handleButtonClick}>
+                JOIN WAITLIST<br />
+                <span className="text-2xl text-[#00536D] font-anekTelugu font-semibold">Your automatic fridge management app</span>
               </button>
-              <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow">
+              <button className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow-xl">
                 ABOUT US<br />
-                <span className="text-2xl text-[#00536D] font-anekTelugu">Built by students</span>
+                <span className="text-2xl text-[#00536D] font-anekTelugu font-semibold" >Built by students</span>
               </button>
             </div>
           </div>
