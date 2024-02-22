@@ -4,6 +4,11 @@ const express = require("express");
 const admin = require("firebase-admin");
 const serviceAccount = require("firebase-adminsdk-cfrtp@pantree-aafff.iam.gserviceaccount.com.json");
 const { add, format } = require("date-fns"); // For date manipulation
+const cron = require("node-cron");
+const twilio = require("twilio")(
+  process.env.TWILIO_TEST_ACCOUNT_SID,
+  process.env.TWILIO_TEST_AUTH_TOKEN
+);
 
 /*
 Assumes users collection is structured in the following format:
@@ -211,6 +216,40 @@ app.post("/add-contact", (req, res) => {
       console.error(error);
       res.status(500).send("Error adding contact");
     });
+});
+
+// Scheduled text message for all users at 6 PM informing them when their groceries will expire.
+cron.schedule("0 18 * * *", async () => {
+  console.log("Checking for expiring food items...");
+  const usersRef = db.collection("users");
+  const snapshot = await usersRef.get();
+
+  snapshot.forEach((doc) => {
+    const userData = doc.data();
+    const phoneNumber = userData.phone_number; // Assuming phone_number is correctly formatted for SMS
+    const expiryInfo = userData.expiry_info || {};
+    const currentDate = new Date();
+
+    Object.keys(expiryInfo).forEach((expiryDate) => {
+      const date = new Date(expiryDate);
+      // Assuming you want to notify users of items expiring today or tomorrow
+      if (date >= currentDate) {
+        const diffTime = Math.abs(date - currentDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate difference in days
+        const itemsExpiring = expiryInfo[expiryDate].join(", ");
+        const message = `Reminder: Your items ${itemsExpiring} will expire in ${diffDays} day(s).`;
+
+        // Send SMS through Twilio
+        twilio.messages
+          .create({
+            body: message,
+            to: phoneNumber, // Text this number
+            from: "+12055024797", // From Twilio trial number
+          })
+          .then((message) => console.log(message.sid));
+      }
+    });
+  });
 });
 
 // TO CREATE CONTACT LIST
