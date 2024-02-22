@@ -10,7 +10,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function MailListForm() {
-  const [submitted, setSubmitted] = useState(false); // New state for tracking submission status
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <Formik
@@ -25,8 +25,8 @@ function MailListForm() {
           })
           .then((response) => {
             console.log(response.data);
-            setSubmitted(true); // Update the state to indicate successful submission
-            actions.resetForm(); // Optional: reset the form fields
+            setSubmitted(true);
+            actions.resetForm(); 
           })
           .catch((error) => {
             console.error("Error:", error);
