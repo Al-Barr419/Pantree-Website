@@ -1,14 +1,14 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LandingPage from './LandingPage';
-import AboutUs from './AboutUs';
+import "./App.css";
+import LandingPage from "./pages/LandingPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Fridge from "./pages/Fridge";
 
 function App() {
   return (
-    <Router>
+    <Router className="App">
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/fridge" element={<Fridge />} />
       </Routes>
     </Router>
   );
