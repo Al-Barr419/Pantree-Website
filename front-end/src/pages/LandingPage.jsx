@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import MailListForm from "./MailListForm";
 
 const Footer = () => {
@@ -27,7 +27,7 @@ const LandingPage = () => {
   };
 
   const handleAboutUsClick = () => {
-    navigate("/about-us"); 
+    navigate("/about-us");
   };
 
   const overlayStyle = {
