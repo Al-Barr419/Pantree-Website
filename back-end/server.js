@@ -1,6 +1,7 @@
 const cors = require("cors");
 require("dotenv").config();
 const express = require("express");
+const { createCustomToken } = require("./jwt");
 const app = express();
 const port = 3001; // Use a different port than your React app
 // Middleware to parse JSON body
@@ -58,6 +59,10 @@ app.post("/add-contact", (req, res) => {
       console.error(error);
       res.status(500).send("Error adding contact");
     });
+});
+
+app.post("/generate-token", (req, res) => {
+  createCustomToken(req,res);
 });
 
 // TO CREATE CONTACT LIST
