@@ -4,6 +4,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const serviceAccount = require("firebase-adminsdk-cfrtp@pantree-aafff.iam.gserviceaccount.com.json");
 const { add, format } = require("date-fns"); // For date manipulation
+const { createCustomToken } = require("./jwt");
 const cron = require("node-cron");
 const twilio = require("twilio")(
   process.env.TWILIO_TEST_ACCOUNT_SID,
@@ -250,6 +251,10 @@ cron.schedule("0 18 * * *", async () => {
       }
     });
   });
+}); // Added closing bracket here
+
+app.post("/generate-token", (req, res) => {
+  createCustomToken(req, res);
 });
 
 // TO CREATE CONTACT LIST
