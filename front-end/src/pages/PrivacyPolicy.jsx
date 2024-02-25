@@ -1,6 +1,4 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import MailListForm from './MailListForm'
+import React from "react";
 
 const Footer = () => {
   return (
@@ -108,7 +106,7 @@ const Footer = () => {
           <h2 className="text-xl font-bold mb-4">Contact Us</h2>
           <p className="text-base leading-relaxed">
             If you have any questions about this Privacy Policy, please contact
-            us at{' '}
+            us at{" "}
             <a
               href="mailto:getpantree@gmail.com"
               className="text-blue-500 underline"
@@ -120,8 +118,8 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
 const PrivacyPolicy = () => {
   return (
@@ -142,7 +140,7 @@ const PrivacyPolicy = () => {
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default PrivacyPolicy
+export default PrivacyPolicy;
