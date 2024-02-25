@@ -5,12 +5,12 @@ const admin = require("firebase-admin");
 const serviceAccount = require("./fireBaseKey.json");
 const { add, format } = require("date-fns"); // For date manipulation
 const { createCustomToken } = require("./jwt");
-const {authAdmin} = require("./fireBase");
+const { authAdmin } = require("./fireBase");
 const cron = require("node-cron");
-// const twilio = require("twilio")(
-//   process.env.TWILIO_TEST_ACCOUNT_SID,
-//   process.env.TWILIO_TEST_AUTH_TOKEN
-// );
+const twilio = require("twilio")(
+  process.env.TWILIO_TEST_ACCOUNT_SID,
+  process.env.TWILIO_TEST_AUTH_TOKEN
+);
 
 /*
 Assumes users collection is structured in the following format:
