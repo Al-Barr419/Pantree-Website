@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import MailListForm from "./MailListForm";
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import MailListForm from './MailListForm'
 
 const Footer = () => {
   return (
@@ -15,33 +15,33 @@ const Footer = () => {
         No more food waste.
       </p>
     </footer>
-  );
-};
+  )
+}
 
 const LandingPage = () => {
-  const [showFormOnly, setShowFormOnly] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const [showFormOnly, setShowFormOnly] = useState(false)
+  const navigate = useNavigate() // Initialize useNavigate hook
 
   const handleJoinWaitlistClick = () => {
-    setShowFormOnly(true);
-  };
+    setShowFormOnly(true)
+  }
 
   const handleAboutUsClick = () => {
-    navigate("/about-us");
-  };
+    navigate('/about-us')
+  }
 
   const overlayStyle = {
-    position: "fixed",
+    position: 'fixed',
     top: 0,
     left: 0,
-    width: "100vw",
-    height: "100vh",
-    backgroundColor: "#F1FCFF",
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: '#F1FCFF',
     zIndex: 1000,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 
   return (
     <div
@@ -85,7 +85,7 @@ const LandingPage = () => {
       )}
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage
