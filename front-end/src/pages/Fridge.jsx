@@ -64,6 +64,7 @@ const items = [
   },
 ];
 const Fridge = () => {
+  // userData holds all the data about the signed in user from the db
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ const Fridge = () => {
     };
 
     getUserData();
-  }, [userData]);
+  }, []);
 
   const [allowDelete, setAllowDelete] = useState(true);
   const menuStyle = {
