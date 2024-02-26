@@ -20,8 +20,28 @@ first_name: "John"
 last_name: "Doe"
 email: "john.doe@gmail.com"
 phone_number: "647-423-2323"
-purchase_info: {Sun Mar 24 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [apples, oranges, mango], ...}
-expiry_info: {Sun Mar 31 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [apples], Fri Apr 05 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [oranges], ...}
+"expiry_info": {
+        "Mon Feb 26 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
+          "strawberries": {
+            "image": "https://www.example.com/strawberries.png",
+            "purchase_date": "Mon Feb 19 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          },
+          "apples": {
+            "image": "https://www.example.com/apples.png",
+            "purchase_date": "Mon Feb 20 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        ],
+        "Mon Feb 27 2024 20:00:00 GMT-0500 (Eastern Standard Time)": [
+          "lemons": {
+            "image": "https://www.example.com/strawberries.png",
+            "purchase_date": "Mon Feb 17 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          },
+          "cucumber": {
+            "image": "https://www.example.com/apples.png",
+            "purchase_date": "Mon Feb 20 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        ],
+      }
 */
 
 // Initialize Firebase Admin with your project's credentials
@@ -69,6 +89,40 @@ app.get("/api/user-data", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error getting user data:", error);
     res.status(500).send("Failed to fetch user data.");
+  }
+});
+
+app.delete("/api/delete-item", authenticateToken, async (req, res) => {
+  const uid = req.user.uid; // Extract user UID from verified token
+  const { itemName, expiryDate } = req.body; // Assume these are passed in the request body
+
+  try {
+    const userRef = admin.firestore().collection("users").doc(uid);
+    const doc = await userRef.get();
+    if (!doc.exists) {
+      return res.status(404).send("User not found.");
+    }
+
+    const userData = doc.data();
+    if (userData.expiry_info && userData.expiry_info[expiryDate]) {
+      // Assuming expiry_info[expiryDate] is an object where keys are item names
+      const items = userData.expiry_info[expiryDate];
+      if (items.hasOwnProperty(itemName)) {
+        delete items[itemName]; // Remove the item from the object
+        await userRef.update({
+          [`expiry_info.${expiryDate}`]: items,
+        });
+
+        res.send("Item deleted successfully.");
+      } else {
+        res.status(404).send("Item not found.");
+      }
+    } else {
+      res.status(404).send("Expiry date not found.");
+    }
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    res.status(500).send("Failed to delete item.");
   }
 });
 

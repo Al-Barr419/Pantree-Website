@@ -66,6 +66,7 @@ const items = [
 const Fridge = () => {
   // userData holds all the data about the signed in user from the db
   const [userData, setUserData] = useState([]);
+  const [allowDelete, setAllowDelete] = useState(true);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -88,7 +89,6 @@ const Fridge = () => {
     getUserData();
   }, []);
 
-  const [allowDelete, setAllowDelete] = useState(true);
   const menuStyle = {
     transform: "translateY(-50%)", // Centering vertically
     background: "rgba(225, 241, 246, 0.6)",
@@ -109,10 +109,47 @@ const Fridge = () => {
   };
 
   const calculateExpiryDate = (dateString) => {
-    return Math.floor(
-      Math.abs(new Date(dateString) - new Date()) / (1000 * 60 * 60 * 24)
+    // commented out because the absolute value does not reflect that the food has already expired
+    // return Math.floor(
+    //   // Math.abs(new Date(dateString) - new Date()) / (1000 * 60 * 60 * 24)
+    //   (new Date(dateString) - new Date()) / (1000 * 60 * 60 * 24)
+    // );
+    return Math.ceil(
+      (new Date(dateString) - new Date()) / (1000 * 60 * 60 * 24)
     );
   };
+
+  const deleteItem = async (itemName, expiryDate) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+      const token = await user.getIdToken();
+
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/delete-item`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ itemName, expiryDate }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete item");
+      }
+
+      const result = await response.json();
+      console.log("Item deleted successfully:", result);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+
   return (
     <div
       className="flex flex-row p-0 relative content-center bg-[#E9F9FE] w-full min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
