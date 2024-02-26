@@ -24,10 +24,11 @@ purchase_info: {Sun Mar 24 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [appl
 expiry_info: {Sun Mar 31 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [apples], Fri Apr 05 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [oranges], ...}
 */
 
-// Initialize Firebase Admin SDK
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
+// Initialize Firebase Admin with your project's credentials
+admin.initializeApp({
+  credential: admin.credential.cert(require(serviceAccount)),
+  // Optionally, specify your database URL here
+});
 
 const db = admin.firestore();
 const app = express();
@@ -35,6 +36,38 @@ const port = 3001; // Use a different port than your React app
 // Middleware to parse JSON body
 app.use(express.json());
 app.use(cors());
+
+// Middleware for authenticating token
+async function authenticateToken(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).send("Access denied. No token provided.");
+  }
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    res.status(400).send("Invalid token.");
+  }
+}
+
+// Endpoint to fetch user data
+app.get("/api/user-data", authenticateToken, async (req, res) => {
+  const uid = req.user.uid; // Extract user UID from verified token
+  try {
+    const userRef = admin.firestore().collection("users").doc(uid);
+    const doc = await userRef.get();
+    if (!doc.exists) {
+      return res.status(404).send("User not found.");
+    }
+    const userData = doc.data();
+    res.json(userData); // Send user data as response
+  } catch (error) {
+    console.error("Error getting user data:", error);
+    res.status(500).send("Failed to fetch user data.");
+  }
+});
 
 app.get("/api/getExpiryInfo/:userId", async (req, res) => {
   const { userId } = req.params; // Extract userId from request parameters

@@ -1,91 +1,118 @@
-import React, { useState } from 'react'
-import { FaClock } from 'react-icons/fa'
-import Tip from '../components/Tip'
-import { FaWindowClose } from 'react-icons/fa'
-import { MdAccountCircle } from 'react-icons/md'
+import React, { useState, useEffect } from "react";
+import { FaClock } from "react-icons/fa";
+import Tip from "../components/Tip";
+import { FaWindowClose } from "react-icons/fa";
+import { MdAccountCircle } from "react-icons/md";
+import firebase from "firebase/app";
+import "firebase/auth";
 const items = [
   {
-    name: 'Milk',
-    store: 'Target',
-    date: '2024-02-20',
-    expDate: '2024-03-25',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Milk",
+    store: "Target",
+    date: "2024-02-20",
+    expDate: "2024-03-25",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
   {
-    name: 'Milk',
-    store: 'Target',
-    date: '2024-02-20',
-    expDate: '2024-03-25',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Milk",
+    store: "Target",
+    date: "2024-02-20",
+    expDate: "2024-03-25",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
   {
-    name: 'Milk',
-    store: 'Target',
-    date: '2024-02-20',
-    expDate: '2024-03-25',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Milk",
+    store: "Target",
+    date: "2024-02-20",
+    expDate: "2024-03-25",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
   {
-    name: 'Milk',
-    store: 'Target',
-    date: '2024-02-20',
-    expDate: '2024-03-25',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Milk",
+    store: "Target",
+    date: "2024-02-20",
+    expDate: "2024-03-25",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
   {
-    name: 'Milk',
-    store: 'Target',
-    date: '2024-02-20',
-    expDate: '2024-03-25',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Milk",
+    store: "Target",
+    date: "2024-02-20",
+    expDate: "2024-03-25",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
 
   {
-    name: 'Eggs',
-    store: 'Kroger',
-    date: '2024-02-18',
-    expDate: '2024-02-23',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Eggs",
+    store: "Kroger",
+    date: "2024-02-18",
+    expDate: "2024-02-23",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
   {
-    name: 'Bread',
-    store: 'Whole Foods',
-    date: '2024-02-17',
-    expDate: '2024-02-22',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Bread",
+    store: "Whole Foods",
+    date: "2024-02-17",
+    expDate: "2024-02-22",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
   {
-    name: 'Chicken',
-    store: 'Costco',
-    date: '2024-02-19',
-    expDate: '2024-02-24',
-    img: 'https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png',
+    name: "Chicken",
+    store: "Costco",
+    date: "2024-02-19",
+    expDate: "2024-02-24",
+    img: "https://www.applesfromny.com/wp-content/uploads/2020/05/20Ounce_NYAS-Apples2.png",
   },
-]
+];
 const Fridge = () => {
-  const [allowDelete, setAllowDelete] = useState(true)
+  const [foodItems, setFoodItems] = useState([]);
+  useEffect(() => {
+    const getUserData = async () => {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const token = await user.getIdToken();
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_URL}/api/user-data`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        console.log(data); // Do something with the data
+        setFoodItems(data);
+      }
+    };
+
+    getUserData();
+  }, []);
+  const [allowDelete, setAllowDelete] = useState(true);
   const menuStyle = {
-    transform: 'translateY(-50%)', // Centering vertically
-    background: 'rgba(225, 241, 246, 0.6)',
-    border: '4px solid #B3DEEA',
-    backdropFilter: 'blur(15px)',
-    borderRadius: '70px 0px 0px 70px',
-    fontFamily: 'Inter, sans-serif',
-  }
+    transform: "translateY(-50%)", // Centering vertically
+    background: "rgba(225, 241, 246, 0.6)",
+    border: "4px solid #B3DEEA",
+    backdropFilter: "blur(15px)",
+    borderRadius: "70px 0px 0px 70px",
+    fontFamily: "Inter, sans-serif",
+  };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const monthAbbreviation = date.toLocaleString('default', { month: 'short' })
-    const day = date.getDate()
+    const date = new Date(dateString);
+    const monthAbbreviation = date.toLocaleString("default", {
+      month: "short",
+    });
+    const day = date.getDate();
 
-    return `${monthAbbreviation} ${day}`
-  }
+    return `${monthAbbreviation} ${day}`;
+  };
 
   const calculateExpiryDate = (dateString) => {
     return Math.floor(
       Math.abs(new Date(dateString) - new Date()) / (1000 * 60 * 60 * 24)
-    )
-  }
+    );
+  };
   return (
     <div
       className="flex flex-row p-0 relative content-center bg-[#E9F9FE] w-full min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
@@ -112,7 +139,7 @@ const Fridge = () => {
           className="flex items-center pl-5 pt-2 text-[#00799F] text-lg font-bold"
           onClick={() => setAllowDelete(!allowDelete)}
         >
-          <FaWindowClose className="mr-2" style={{ color: '#00799F' }} />
+          <FaWindowClose className="mr-2" style={{ color: "#00799F" }} />
           <p>DELETE</p>
         </button>
       </div>
@@ -153,8 +180,8 @@ const Fridge = () => {
                   <div className="bg-[#F9E3E3] rounded-lg p-1 flex items-center text-[8px] lg:text-xs md:text-[10px] sm:text-[8px]">
                     <FaClock className="mr-2" />
                     <p>
-                      Expected expiry in {calculateExpiryDate(item.expDate)}{' '}
-                      {calculateExpiryDate(item.expDate) === 1 ? 'day' : 'days'}
+                      Expected expiry in {calculateExpiryDate(item.expDate)}{" "}
+                      {calculateExpiryDate(item.expDate) === 1 ? "day" : "days"}
                     </p>
                   </div>
                 </div>
@@ -182,11 +209,11 @@ const Fridge = () => {
                 <div className="bg-[#DAEEDC] rounded-lg p-1 text-[8px] lg:text-xs md:text-[10px] sm:text-[8px] flex items-center">
                   <FaClock className="mr-2" />
                   <p>
-                    Expires in{' '}
-                    {Math.floor(calculateExpiryDate(item.expDate) / 7)}{' '}
+                    Expires in{" "}
+                    {Math.floor(calculateExpiryDate(item.expDate) / 7)}{" "}
                     {Math.floor(calculateExpiryDate(item.expDate) / 7) === 1
-                      ? 'week'
-                      : 'weeks'}
+                      ? "week"
+                      : "weeks"}
                   </p>
                 </div>
               </div>
@@ -195,9 +222,9 @@ const Fridge = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Fridge
+export default Fridge;
 
 /* Fridge */
