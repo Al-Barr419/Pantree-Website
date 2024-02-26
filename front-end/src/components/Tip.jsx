@@ -5,7 +5,7 @@ const Tip = ({ allowDelete }) => {
   const [isHovered, setIsHovered] = useState(false)
 
   const handleHover = () => {
-    setIsHovered(!isHovered)
+    if (allowDelete) setIsHovered(!isHovered)
   }
 
   return (
