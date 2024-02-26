@@ -19,7 +19,7 @@ Firebase generated ID:
 first_name: "John"
 last_name: "Doe"
 email: "john.doe@gmail.com"
-phone_number: "647-423-2323"
+phone_number: "6474232323"
 "expiry_info": {
         "Mon Feb 26 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
           "strawberries": {
