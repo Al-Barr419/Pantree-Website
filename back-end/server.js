@@ -25,10 +25,13 @@ expiry_info: {Sun Mar 31 2024 20:00:00 GMT-0400 (Eastern Daylight Time): [apples
 */
 
 // Initialize Firebase Admin with your project's credentials
-admin.initializeApp({
-  credential: admin.credential.cert(require(serviceAccount)),
-  // Optionally, specify your database URL here
-});
+if (admin.apps.length === 0) {
+  // Check if any Firebase apps have been initialized
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    // Optionally, specify your database URL here
+  });
+}
 
 const db = admin.firestore();
 const app = express();

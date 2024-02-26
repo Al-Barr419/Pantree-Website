@@ -3,8 +3,7 @@ import { FaClock } from "react-icons/fa";
 import Tip from "../components/Tip";
 import { FaWindowClose } from "react-icons/fa";
 import { MdAccountCircle } from "react-icons/md";
-import firebase from "firebase/app";
-import "firebase/auth";
+import { auth } from "../Firebase";
 const items = [
   {
     name: "Milk",
@@ -65,12 +64,12 @@ const items = [
   },
 ];
 const Fridge = () => {
-  const [foodItems, setFoodItems] = useState([]);
+  const [userData, setUserData] = useState([]);
+
   useEffect(() => {
     const getUserData = async () => {
-      const user = firebase.auth().currentUser;
-      if (user) {
-        const token = await user.getIdToken();
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken();
         const response = await fetch(
           `${process.env.REACT_APP_BACKEND_URL}/api/user-data`,
           {
@@ -81,13 +80,13 @@ const Fridge = () => {
           }
         );
         const data = await response.json();
-        console.log(data); // Do something with the data
-        setFoodItems(data);
+        setUserData(data);
       }
     };
 
     getUserData();
-  }, []);
+  }, [userData]);
+
   const [allowDelete, setAllowDelete] = useState(true);
   const menuStyle = {
     transform: "translateY(-50%)", // Centering vertically
