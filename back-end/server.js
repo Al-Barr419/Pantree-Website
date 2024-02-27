@@ -42,6 +42,36 @@ phone_number: "6474232323"
           }
         ],
       }
+
+
+      potential new version:
+
+      "expiry_info": {
+        "Mon Feb 26 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
+          {
+            "name": "strawberries",
+            "image": "https://www.example.com/strawberries.png",
+            "purchase_date": "Mon Feb 19 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          },
+          {
+            "name": "apples",
+            "image": "https://www.example.com/apples.png",
+            "purchase_date": "Mon Feb 20 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        ],
+        "Mon Feb 27 2024 20:00:00 GMT-0500 (Eastern Standard Time)": [
+          {
+            "name": "lemons",
+            "image": "https://www.example.com/strawberries.png",
+            "purchase_date": "Mon Feb 17 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          },
+          {
+            "name": "cucumber",
+            "image": "https://www.example.com/apples.png",
+            "purchase_date": "Mon Feb 20 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        ],
+      }
 */
 
 // Initialize Firebase Admin with your project's credentials
@@ -105,20 +135,19 @@ app.delete("/api/delete-item", authenticateToken, async (req, res) => {
 
     const userData = doc.data();
     if (userData.expiry_info && userData.expiry_info[expiryDate]) {
-      // Assuming expiry_info[expiryDate] is an object where keys are item names
-      const items = userData.expiry_info[expiryDate];
-      if (items.hasOwnProperty(itemName)) {
-        delete items[itemName]; // Remove the item from the object
-        await userRef.update({
-          [`expiry_info.${expiryDate}`]: items,
-        });
+      // Filter out the item to delete
+      const updatedItems = userData.expiry_info[expiryDate].filter(
+        (item) => item.name !== itemName
+      );
 
-        res.send("Item deleted successfully.");
-      } else {
-        res.status(404).send("Item not found.");
-      }
+      // Update the document with the filtered items
+      await userRef.update({
+        [`expiry_info.${expiryDate}`]: updatedItems,
+      });
+
+      res.send("Item deleted successfully.");
     } else {
-      res.status(404).send("Expiry date not found.");
+      res.status(404).send("Item or expiry date not found.");
     }
   } catch (error) {
     console.error("Error deleting item:", error);
