@@ -44,7 +44,7 @@ phone_number: "6474232323"
       }
 
 
-      potential new version:
+      potential future version:
 
       "expiry_info": {
         "Mon Feb 26 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
@@ -135,19 +135,20 @@ app.delete("/api/delete-item", authenticateToken, async (req, res) => {
 
     const userData = doc.data();
     if (userData.expiry_info && userData.expiry_info[expiryDate]) {
-      // Filter out the item to delete
-      const updatedItems = userData.expiry_info[expiryDate].filter(
-        (item) => item.name !== itemName
-      );
+      // Assuming expiry_info[expiryDate] is an object where keys are item names
+      const items = userData.expiry_info[expiryDate];
+      if (items.hasOwnProperty(itemName)) {
+        delete items[itemName]; // Remove the item from the object
+        await userRef.update({
+          [`expiry_info.${expiryDate}`]: items,
+        });
 
-      // Update the document with the filtered items
-      await userRef.update({
-        [`expiry_info.${expiryDate}`]: updatedItems,
-      });
-
-      res.send("Item deleted successfully.");
+        res.send("Item deleted successfully.");
+      } else {
+        res.status(404).send("Item not found.");
+      }
     } else {
-      res.status(404).send("Item or expiry date not found.");
+      res.status(404).send("Expiry date not found.");
     }
   } catch (error) {
     console.error("Error deleting item:", error);
