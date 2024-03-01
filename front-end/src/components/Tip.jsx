@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { GiStarFormation } from 'react-icons/gi'
 import { FaWindowClose } from 'react-icons/fa'
-const Tip = ({ allowDelete }) => {
+const Tip = () => {
   const [isHovered, setIsHovered] = useState(false)
 
   const handleHover = () => {
-    if (allowDelete) setIsHovered(!isHovered)
+    setIsHovered(!isHovered)
   }
 
   return (
@@ -15,7 +15,7 @@ const Tip = ({ allowDelete }) => {
       style={{
         width: isHovered ? 'auto' : '20px',
         height: '20px',
-        backgroundColor: allowDelete ? '#310098' : 'transparent',
+        backgroundColor: '#310098',
         transition: 'width 0.5s',
         padding: '1px',
         overflow: 'hidden',
@@ -28,16 +28,12 @@ const Tip = ({ allowDelete }) => {
         justifyContent: 'center',
       }}
     >
-      {allowDelete ? (
-        isHovered ? (
-          <p className="text-[0.5rem] p-1 text-white">
-            Refigerate to extend by <span className="font-bold">3 days</span>
-          </p>
-        ) : (
-          <GiStarFormation style={{ color: 'white' }} />
-        )
+      {isHovered ? (
+        <p className="text-[0.5rem] p-1 text-white">
+          Refigerate to extend by <span className="font-bold">3 days</span>
+        </p>
       ) : (
-        <FaWindowClose style={{ color: 'red' }} />
+        <GiStarFormation style={{ color: 'white' }} />
       )}
     </div>
   )
