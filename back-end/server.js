@@ -8,8 +8,8 @@ const { createCustomToken } = require("./jwt");
 const { authAdmin } = require("./fireBase");
 const cron = require("node-cron");
 const twilio = require("twilio")(
-  process.env.TWILIO_TEST_ACCOUNT_SID,
-  process.env.TWILIO_TEST_AUTH_TOKEN
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
 );
 
 /*
@@ -156,136 +156,6 @@ app.delete("/api/delete-item", authenticateToken, async (req, res) => {
   }
 });
 
-app.get("/api/getExpiryInfo/:userId", async (req, res) => {
-  const { userId } = req.params; // Extract userId from request parameters
-
-  try {
-    const userRef = db.collection("users").doc(userId);
-    const userDoc = await userRef.get();
-
-    if (!userDoc.exists) {
-      return res.status(404).send("User not found");
-    }
-
-    const userData = userDoc.data();
-    // Initialize with existing data if present, or empty object if not
-    const currentPurchaseInfo = userData.purchase_info || {};
-    const currentExpiryInfo = userData.expiry_info || {};
-
-    for (const itemName of foodItems) {
-      const itemSnapshot = await db
-        .collection("items")
-        .where("names", "array-contains", itemName)
-        .get();
-      if (itemSnapshot.empty) {
-        console.log(`No matching items found for ${itemName}`);
-        continue; // Skip this item if not found
-      }
-
-      const itemData = itemSnapshot.docs[0].data();
-      const { exp_time, exp_unit } = itemData;
-      const expiryDate = add(currentDate, {
-        [exp_unit.toLowerCase()]: exp_time,
-      });
-      const formattedCurrentDate = format(
-        currentDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-      const formattedExpiryDate = format(
-        expiryDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-
-      // Merge purchase info
-      if (!currentPurchaseInfo[formattedCurrentDate]) {
-        currentPurchaseInfo[formattedCurrentDate] = [];
-      }
-      currentPurchaseInfo[formattedCurrentDate].push(itemName);
-
-      // Merge expiry info
-      if (!currentExpiryInfo[formattedExpiryDate]) {
-        currentExpiryInfo[formattedExpiryDate] = [];
-      }
-      currentExpiryInfo[formattedExpiryDate].push(itemName);
-    }
-
-    // Apply the merged updates
-    await userRef.update({
-      purchase_info: currentPurchaseInfo,
-      expiry_info: currentExpiryInfo,
-    });
-
-    res.status(200).send("Purchase and expiry info updated successfully");
-  } catch (error) {
-    console.error("Error updating user document:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.post("/api/updatePurchaseAndExpiry", async (req, res) => {
-  const { userId, foodItems } = req.body; // Assuming foodItems is an array of item names
-
-  if (!userId || !foodItems) {
-    return res.status(400).send("Missing userId or foodItems in request");
-  }
-
-  try {
-    const userRef = db.collection("users").doc(userId);
-    const currentDate = new Date();
-    const purchaseInfoUpdate = {};
-    const expiryInfoUpdate = {};
-
-    for (const itemName of foodItems) {
-      const itemSnapshot = await db
-        .collection("items")
-        .where("names", "array-contains", itemName)
-        .get();
-
-      if (itemSnapshot.empty) {
-        console.log(`No matching items found for ${itemName}`);
-        continue; // Skip this item if not found
-      }
-
-      const itemData = itemSnapshot.docs[0].data();
-      const { exp_time, exp_unit } = itemData;
-      const expiryDate = add(currentDate, {
-        [exp_unit.toLowerCase()]: exp_time,
-      });
-
-      // Update purchase info with current date
-      const formattedCurrentDate = format(
-        currentDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-      if (!purchaseInfoUpdate[formattedCurrentDate]) {
-        purchaseInfoUpdate[formattedCurrentDate] = [];
-      }
-      purchaseInfoUpdate[formattedCurrentDate].push(itemName);
-
-      // Update expiry info
-      const formattedExpiryDate = format(
-        expiryDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-      if (!expiryInfoUpdate[formattedExpiryDate]) {
-        expiryInfoUpdate[formattedExpiryDate] = [];
-      }
-      expiryInfoUpdate[formattedExpiryDate].push(itemName);
-    }
-
-    // Update user document
-    await userRef.update({
-      purchase_info: admin.firestore.FieldValue.arrayUnion(purchaseInfoUpdate),
-      expiry_info: admin.firestore.FieldValue.arrayUnion(expiryInfoUpdate),
-    });
-
-    res.status(200).send("Purchase and expiry info updated successfully");
-  } catch (error) {
-    console.error("Error updating user document:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
 app.get("/", (req, res) => {
   res.send("Hello from the back-end!");
 });
@@ -343,7 +213,7 @@ app.post("/add-contact", (req, res) => {
 // Scheduled text message for all users at 6 PM informing them when their groceries will expire.
 cron.schedule("0 18 * * *", async () => {
   console.log("Checking for expiring food items...");
-  const usersRef = db.collection("users");
+  const usersRef = admin.firestore().collection("users");
   const snapshot = await usersRef.get();
 
   snapshot.forEach((doc) => {
@@ -353,26 +223,30 @@ cron.schedule("0 18 * * *", async () => {
     const currentDate = new Date();
 
     Object.keys(expiryInfo).forEach((expiryDate) => {
+      const items = expiryInfo[expiryDate];
       const date = new Date(expiryDate);
-      // Assuming you want to notify users of items expiring today or tomorrow
-      if (date >= currentDate) {
-        const diffTime = Math.abs(date - currentDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate difference in days
-        const itemsExpiring = expiryInfo[expiryDate].join(", ");
-        const message = `Reminder: Your items ${itemsExpiring} will expire in ${diffDays} day(s).`;
 
-        // Send SMS through Twilio
-        twilio.messages
-          .create({
-            body: message,
-            to: phoneNumber, // Text this number
-            from: "+12055024797", // From Twilio trial number
-          })
-          .then((message) => console.log(message.sid));
+      if (date >= currentDate) {
+        items.forEach((item) => {
+          const itemName = Object.keys(item)[0]; // Get the name of the item
+          const diffTime = Math.abs(date - currentDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate difference in days
+          const message = `Reminder: Your item ${itemName} will expire in ${diffDays} day(s).`;
+
+          // Send SMS through Twilio
+          twilio.messages
+            .create({
+              body: message,
+              to: phoneNumber, // Text this number
+              from: "+13653638018", // From a valid Twilio number
+            })
+            .then((message) => console.log(message.sid))
+            .catch((error) => console.error(error));
+        });
       }
     });
   });
-}); // Added closing bracket here
+});
 
 app.post("/generate-token", (req, res) => {
   createCustomToken(req, res);
