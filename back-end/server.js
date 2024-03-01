@@ -7,10 +7,10 @@ const { add, format } = require('date-fns') // For date manipulation
 const { createCustomToken } = require('./jwt')
 const { authAdmin } = require('./fireBase')
 const cron = require('node-cron')
-// const twilio = require("twilio")(
-//   process.env.TWILIO_ACCOUNT_SID,
-//   process.env.TWILIO_AUTH_TOKEN
-// );
+const twilio = require('twilio')(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+)
 
 /*
 Assumes users collection is structured in the following format:
@@ -249,42 +249,42 @@ app.post('/add-contact', (req, res) => {
 })
 
 // Scheduled text message for all users at 6 PM informing them when their groceries will expire.
-// cron.schedule("0 18 * * *", async () => {
-//   console.log("Checking for expiring food items...");
-//   const usersRef = admin.firestore().collection("users");
-//   const snapshot = await usersRef.get();
+cron.schedule('0 18 * * *', async () => {
+  console.log('Checking for expiring food items...')
+  const usersRef = admin.firestore().collection('users')
+  const snapshot = await usersRef.get()
 
-//   snapshot.forEach((doc) => {
-//     const userData = doc.data();
-//     const phoneNumber = userData.phone_number; // Assuming phone_number is correctly formatted for SMS
-//     const expiryInfo = userData.expiry_info || {};
-//     const currentDate = new Date();
+  snapshot.forEach((doc) => {
+    const userData = doc.data()
+    const phoneNumber = userData.phone_number // Assuming phone_number is correctly formatted for SMS
+    const expiryInfo = userData.expiry_info || {}
+    const currentDate = new Date()
 
-//     Object.keys(expiryInfo).forEach((expiryDate) => {
-//       const items = expiryInfo[expiryDate];
-//       const date = new Date(expiryDate);
+    Object.keys(expiryInfo).forEach((expiryDate) => {
+      const items = expiryInfo[expiryDate]
+      const date = new Date(expiryDate)
 
-//       if (date >= currentDate) {
-//         items.forEach((item) => {
-//           const itemName = Object.keys(item)[0]; // Get the name of the item
-//           const diffTime = Math.abs(date - currentDate);
-//           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate difference in days
-//           const message = `Reminder: Your item ${itemName} will expire in ${diffDays} day(s).`;
+      if (date >= currentDate) {
+        items.forEach((item) => {
+          const itemName = Object.keys(item)[0] // Get the name of the item
+          const diffTime = Math.abs(date - currentDate)
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) // Calculate difference in days
+          const message = `Reminder: Your item ${itemName} will expire in ${diffDays} day(s).`
 
-//           // Send SMS through Twilio
-//           twilio.messages
-//             .create({
-//               body: message,
-//               to: phoneNumber, // Text this number
-//               from: "+13653638018", // From a valid Twilio number
-//             })
-//             .then((message) => console.log(message.sid))
-//             .catch((error) => console.error(error));
-//         });
-//       }
-//     });
-//   });
-// });
+          // Send SMS through Twilio
+          twilio.messages
+            .create({
+              body: message,
+              to: phoneNumber, // Text this number
+              from: '+13653638018', // From a valid Twilio number
+            })
+            .then((message) => console.log(message.sid))
+            .catch((error) => console.error(error))
+        })
+      }
+    })
+  })
+})
 
 app.post('/generate-token', (req, res) => {
   createCustomToken(req, res)
