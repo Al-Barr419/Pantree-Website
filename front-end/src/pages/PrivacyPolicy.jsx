@@ -1,5 +1,5 @@
-import React from "react";
-
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
 const Footer = () => {
   return (
     <footer className="bg-[#f1fcff] text-[#00566E] text-center inline-block flex flex-col justify-center">
@@ -106,7 +106,7 @@ const Footer = () => {
           <h2 className="text-xl font-bold mb-4">Contact Us</h2>
           <p className="text-base leading-relaxed">
             If you have any questions about this Privacy Policy, please contact
-            us at{" "}
+            us at{' '}
             <a
               href="mailto:getpantree@gmail.com"
               className="text-blue-500 underline"
@@ -118,17 +118,27 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
 const PrivacyPolicy = () => {
+  const navigate = useNavigate()
   return (
     <div
       className="flex flex-col h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url("/Fruits.png")` }}
     >
       <div className="flex flex-col justify-center items-center flex-grow">
-        <img src="/Logo.png" alt="Pantree Logo" width={500} height={500} />
+        <div className="logo text-center mt-4">
+          <button onClick={() => navigate('/')}>
+            <img
+              src="/Logo.png"
+              alt="Company Logo"
+              className="mx-auto"
+              style={{ maxWidth: '300px', marginBottom: '2rem' }}
+            />
+          </button>
+        </div>
         <p className="text-xl text-[#00566E] text-center pt-3.5 font-anekTelugu">
           Saving those blueberries you forgot about
         </p>
@@ -140,7 +150,7 @@ const PrivacyPolicy = () => {
       </div>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default PrivacyPolicy;
+export default PrivacyPolicy

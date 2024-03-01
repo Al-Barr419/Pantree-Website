@@ -25,7 +25,7 @@ function MailListForm() {
               src="/Logo.png"
               alt="Company Logo"
               className="mx-auto"
-              style={{ maxWidth: '500px', marginBottom: '2rem' }}
+              style={{ maxWidth: '300px', marginBottom: '2rem' }}
             />
           </button>
         </div>
