@@ -156,6 +156,33 @@ app.delete("/api/delete-item", authenticateToken, async (req, res) => {
   }
 });
 
+// endpoint to add/edit phone number
+app.post("/api/editPhoneNumber", authenticateToken, async (req, res) => {
+  const uid = req.user.uid; // Extract user UID from verified token
+  const { newPhoneNumber } = req.body;
+  if (!newPhoneNumber) {
+    return res.status(400).send("No phone number provided.");
+  }
+  try {
+    const userRef = admin.firestore().collection("users").doc(uid);
+    const doc = await userRef.get();
+    if (!doc.exists) {
+      return res.status(404).send("User not found.");
+    }
+    // Update the phone_number in userData, either adding or replacing it
+    await userRef.update({
+      phone_number: newPhoneNumber,
+    });
+
+    res.json({
+      message: "Phone number updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating user phone number:", error);
+    res.status(500).send("Failed to update user phone number.");
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("Hello from the back-end!");
 });
