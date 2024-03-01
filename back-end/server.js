@@ -253,7 +253,7 @@ cron.schedule("0 18 * * *", async () => {
       const items = expiryInfo[expiryDate];
       const date = new Date(expiryDate);
 
-      if (date >= currentDate) {
+      if (date >= currentDate && phoneNumber !== "") {
         items.forEach((item) => {
           const itemName = Object.keys(item)[0]; // Get the name of the item
           const diffTime = Math.abs(date - currentDate);
