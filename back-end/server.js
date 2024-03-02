@@ -138,18 +138,17 @@ app.delete('/api/delete-item', authenticateToken, async (req, res) => {
       // Assuming expiry_info[expiryDate] is an object where keys are item names
       const items = userData.expiry_info[expiryDate]
       // TEMP FIX USING INDEX
-      let itemIndex = -1
-
-      items.forEach((item, index) => {
+      let itemIndex = items.indexOf(itemName)
+      items.forEach((item, i) => {
         if (item.hasOwnProperty(itemName)) {
-          itemIndex = index
+          itemIndex = i
         }
       })
       if (itemIndex === -1) {
         return res.status(404).send('Item not found through indexing.')
       }
-      if (items[index].hasOwnProperty(itemName)) {
-        delete items[index][itemName] // Remove the item from the object
+      if (items[itemIndex].hasOwnProperty(itemName)) {
+        delete items[itemIndex][itemName] // Remove the item from the object
         await userRef.update({
           [`expiry_info.${expiryDate}`]: items,
         })
