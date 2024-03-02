@@ -52,7 +52,6 @@ const Fridge = () => {
   }
 
   useEffect(() => {
-<<<<<<< Updated upstream
     const getUserData = async () => {
       if (auth.currentUser) {
         const token = await auth.currentUser.getIdToken()
@@ -74,63 +73,6 @@ const Fridge = () => {
     }
     getUserData()
   }, [])
-=======
-    const dummyData = {
-      "Thu Mar 14 2024 18:00:00 GMT-0400 (Eastern Daylight Time)": [
-        {
-          "clementine": {
-            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_f7b4788b-7c3d-4235-b84f-7d3d2dfb398f.png",
-            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
-          }
-        }
-      ],
-      "Fri Mar 01 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
-        {
-          "strawberries": {
-            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_d440fb68-d67b-4f16-995d-a398879dcb85.jpg",
-            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
-          }
-        }
-      ],
-      "Wed Mar 06 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
-        {
-          "mission blueberries": {
-            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_5b1b06b0-92f3-472a-bfcc-0b9ad4074b52.jpg",
-            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
-          }
-        },
-        {
-          "anjou pear": {
-            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_0de36304-cdcb-49fd-931e-550526089113.jpg",
-            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
-          }
-        }
-      ]
-    };
-    // Directly set the userData state with the dummy data
-    setUserData({ expiry_info: dummyData });
-    // const getUserData = async () => {
-    //   if (auth.currentUser) {
-    //     const token = await auth.currentUser.getIdToken();
-    //     const response = await fetch(
-    //       `${process.env.REACT_APP_BACKEND_URL}/api/user-data`,
-    //       {
-    //         method: "GET",
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     console.log("yp");
-    //     const data = await response.json();
-    //     setUserData(data);
-    //     console.log("User authenticated", data);
-    //     setExpiryInfo(data.expiry_info);
-    //   }
-    // };
-    // getUserData();
-  }, []);
->>>>>>> Stashed changes
 
   const menuStyle = {
     background: 'rgba(225, 241, 246, 0.6)',
