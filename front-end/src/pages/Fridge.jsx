@@ -11,6 +11,7 @@ const Fridge = () => {
   const [userData, setUserData] = useState(null)
   const [allowDelete, setAllowDelete] = useState(false)
   const [expiryInfo, setExpiryInfo] = useState(null)
+  const [deletedItems, setDeletedItems] = useState([])
   let navigate = useNavigate()
   const routeChange = () => {
     let path = `/`
@@ -39,11 +40,11 @@ const Fridge = () => {
         const data = await response.json()
         setUserData(data)
         console.log('User authenticated', data)
-        setExpiryInfo(data.expiry_info)
+        setExpiryInfo(data['expiry_info'])
       }
     }
     getUserData()
-  }, [])
+  }, [deletedItems])
 
   const menuStyle = {
     background: 'rgba(225, 241, 246, 0.6)',
@@ -75,6 +76,25 @@ const Fridge = () => {
   }
 
   const deleteItem = async (itemName, expiryDate) => {
+    console.log('itemIndex', itemName, expiryDate)
+    let items = userData['expiry_info'][expiryDate]
+    let itemIndex = -1
+
+    items.forEach((item, i) => {
+      if (item) {
+        if (item.hasOwnProperty(itemName)) {
+          itemIndex = i
+        }
+      }
+    })
+
+    if (itemIndex !== -1) {
+      console.log(
+        'deleting',
+        userData['expiry_info'][expiryDate][itemIndex][itemName]
+      )
+      setDeletedItems(deletedItems.concat(itemName))
+    }
     try {
       const user = auth.currentUser
       if (!user) {
@@ -129,6 +149,9 @@ const Fridge = () => {
         }
       }
     }
+    if (!itemName) {
+      return null
+    }
     if (urgent) {
       return (
         <div
@@ -165,6 +188,8 @@ const Fridge = () => {
         <div
           key={itemName}
           className="flex flex-col items-center bg-white rounded-lg mb-4 p-4"
+          onClick={handleClick}
+          style={{ borderColor: borderColor, borderWidth: borderWidth }}
         >
           <img
             src={itemDetails.image}

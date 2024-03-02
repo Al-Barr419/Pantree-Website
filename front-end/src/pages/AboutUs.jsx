@@ -51,14 +51,14 @@ const teamMembers = [
     photoUrl: '/Claire_Hu.webp',
   },
   {
-    name: 'Emanuel Piccinini',
+    name: 'Emanuel Piccininni',
     title: 'Business Analyst',
     pronouns: 'he/him',
     photoUrl: '/Emanuel_Piccinini.webp',
   },
   {
     name: 'Janevra Pier',
-    title: 'Frosh Rep',
+    title: 'Designer',
     pronouns: 'she/her',
     photoUrl: '/Janevra_Pier.webp',
   },
