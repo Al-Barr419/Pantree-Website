@@ -111,7 +111,7 @@ function AboutUs() {
             <img
               src={member.photoUrl}
               alt={`${member.name}'s profile`}
-              className="w-32 h-32 rounded-full mx-auto mb-3"
+              className="w-32 h-32 rounded-full mx-auto mb-3 object-cover"
             />
             <h2 className="text-xl font-semibold">{member.name}</h2>
             <p className="text-md text-[#00566E] font-thin">
