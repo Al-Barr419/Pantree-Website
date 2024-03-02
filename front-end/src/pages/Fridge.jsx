@@ -52,6 +52,7 @@ const Fridge = () => {
   }
 
   useEffect(() => {
+<<<<<<< Updated upstream
     const getUserData = async () => {
       if (auth.currentUser) {
         const token = await auth.currentUser.getIdToken()
@@ -73,6 +74,63 @@ const Fridge = () => {
     }
     getUserData()
   }, [])
+=======
+    const dummyData = {
+      "Thu Mar 14 2024 18:00:00 GMT-0400 (Eastern Daylight Time)": [
+        {
+          "clementine": {
+            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_f7b4788b-7c3d-4235-b84f-7d3d2dfb398f.png",
+            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        }
+      ],
+      "Fri Mar 01 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
+        {
+          "strawberries": {
+            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_d440fb68-d67b-4f16-995d-a398879dcb85.jpg",
+            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        }
+      ],
+      "Wed Mar 06 2024 18:00:00 GMT-0500 (Eastern Standard Time)": [
+        {
+          "mission blueberries": {
+            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_5b1b06b0-92f3-472a-bfcc-0b9ad4074b52.jpg",
+            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        },
+        {
+          "anjou pear": {
+            "image": "https://d2lnr5mha7bycj.cloudfront.net/product-image/file/large_0de36304-cdcb-49fd-931e-550526089113.jpg",
+            "purchase_date": "Wed Feb 28 2024 18:00:00 GMT-0500 (Eastern Standard Time)"
+          }
+        }
+      ]
+    };
+    // Directly set the userData state with the dummy data
+    setUserData({ expiry_info: dummyData });
+    // const getUserData = async () => {
+    //   if (auth.currentUser) {
+    //     const token = await auth.currentUser.getIdToken();
+    //     const response = await fetch(
+    //       `${process.env.REACT_APP_BACKEND_URL}/api/user-data`,
+    //       {
+    //         method: "GET",
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       }
+    //     );
+    //     console.log("yp");
+    //     const data = await response.json();
+    //     setUserData(data);
+    //     console.log("User authenticated", data);
+    //     setExpiryInfo(data.expiry_info);
+    //   }
+    // };
+    // getUserData();
+  }, []);
+>>>>>>> Stashed changes
 
   const menuStyle = {
     background: 'rgba(225, 241, 246, 0.6)',
@@ -137,7 +195,7 @@ const Fridge = () => {
     <div
       className="flex flex-col p-0 relative content-center bg-[#E9F9FE] w-full h-screen bg-cover bg-center bg-no-repeat bg-fixed"
       style={{
-        backgroundImage: `url("/Fruits.png")`,
+        backgroundImage: `url("/Fruits2.png")`,
       }}
     >
       <button onClick={routeChange}>
@@ -152,23 +210,24 @@ const Fridge = () => {
       </button>
       {userData ? (
         <>
-          <div className="flex absolute right-3/4 top-2/4 flex-col justify-end items-center p-10 space-y-[100px] text-xl font-bold">
-            <h1>Expiring Soon</h1>
-            <h1>Remaining Items</h1>
-          </div>
-          <div className="w-3/6 h-10 bg-[#E1F1F680] rounded-lg self-end mt-[200px]">
+          <div
+            className="flex flex-col justify-between p-0 absolute bottom-0 right-0 h-auto w-3/4 z-10"
+            style={menuStyle}
+          >
+            {/* Expiring Soon Section */}
+            <div className="delete button pl-12">
             <button
-              className="flex items-center pl-5 pt-2 text-[#00799F] text-lg font-bold "
+              className="rounded-l-lg w-dvw flex items-center pl-5 pt-2 text-[#00799F] text-lg font-bold "
+              style={{ backgroundColor: 'rgba(225, 241, 246, 0.5)'}} // Added backgroundColor here
               onClick={() => setAllowDelete(!allowDelete)}
             >
               <FaWindowClose className="mr-2" style={{ color: '#00799F' }} />
               <p>DELETE</p>
             </button>
-          </div>
-          <div
-            className="flex flex-col justify-between p-0 absolute bottom-0 right-0 h-auto w-3/4 z-10"
-            style={menuStyle}
-          >
+            </div>
+            <div className="p-4 pl-8">
+              <p className="text-lg text-[#00799F]">Expiring Soon</p>
+            </div>
             <div className="flex flex-row justify-between flex-wrap p-5">
               {userData &&
                 Object.keys(userData['expiry_info'])
@@ -237,6 +296,10 @@ const Fridge = () => {
             </div>
 
             <div className="ml-5 w-full h-1 bg-[#B3DEEA]"></div>
+            {/* Remaining Items Section */}
+            <div className="p-4 pl-8">
+              <p className="text-lg text-[#00799F]">Remaining Items</p>
+            </div>
             <div className="flex flex-row justify-between flex-wrap p-5">
               {userData &&
                 Object.keys(userData['expiry_info'])
