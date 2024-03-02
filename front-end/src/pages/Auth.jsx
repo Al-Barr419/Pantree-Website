@@ -166,7 +166,7 @@ const Auth = () => {
     <div className="flex flex-col min-h-screen">
       <div
         className="flex flex-col h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url("/Fruits.png")` }}
+        style={{ backgroundImage: `url("/Fruits2.png")` }}
       >
         <div className="logo text-center mt-4">
           <button onClick={() => navigate('/')}>
