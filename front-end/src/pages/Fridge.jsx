@@ -5,41 +5,13 @@ import { FaWindowClose } from 'react-icons/fa'
 import { MdAccountCircle } from 'react-icons/md'
 import { auth } from '../Firebase'
 import { useNavigate } from 'react-router-dom'
-const expiry_info = [
-  {
-    'Mon Feb 26 2024 18:00:00 GMT-0500 (Eastern Standard Time)': {
-      strawberries: {
-        image: 'https://www.example.com/strawberries.png',
-        purchase_date:
-          'Mon Feb 19 2024 18:00:00 GMT-0500 (Eastern Standard Time)',
-      },
-      apples: {
-        image: 'https://www.example.com/apples.png',
-        purchase_date:
-          'Mon Feb 20 2024 18:00:00 GMT-0500 (Eastern Standard Time)',
-      },
-    },
-  },
-  {
-    'Mon Feb 27 2024 20:00:00 GMT-0500 (Eastern Standard Time)': {
-      lemons: {
-        image: 'https://www.example.com/strawberries.png',
-        purchase_date:
-          'Mon Feb 17 2024 18:00:00 GMT-0500 (Eastern Standard Time)',
-      },
-      cucumber: {
-        image: 'https://www.example.com/apples.png',
-        purchase_date:
-          'Mon Feb 20 2024 18:00:00 GMT-0500 (Eastern Standard Time)',
-      },
-    },
-  },
-]
+
 const Fridge = () => {
   // userData holds all the data about the signed in user from the db
   const [userData, setUserData] = useState(null)
-  const [allowDelete, setAllowDelete] = useState(true)
+  const [allowDelete, setAllowDelete] = useState(false)
   const [expiryInfo, setExpiryInfo] = useState(null)
+  const [deletedItems, setDeletedItems] = useState([])
   let navigate = useNavigate()
   const routeChange = () => {
     let path = `/`
@@ -68,11 +40,11 @@ const Fridge = () => {
         const data = await response.json()
         setUserData(data)
         console.log('User authenticated', data)
-        setExpiryInfo(data.expiry_info)
+        setExpiryInfo(data['expiry_info'])
       }
     }
     getUserData()
-  }, [])
+  }, [deletedItems])
 
   const menuStyle = {
     background: 'rgba(225, 241, 246, 0.6)',
@@ -104,6 +76,25 @@ const Fridge = () => {
   }
 
   const deleteItem = async (itemName, expiryDate) => {
+    console.log('itemIndex', itemName, expiryDate)
+    let items = userData['expiry_info'][expiryDate]
+    let itemIndex = -1
+
+    items.forEach((item, i) => {
+      if (item) {
+        if (item.hasOwnProperty(itemName)) {
+          itemIndex = i
+        }
+      }
+    })
+
+    if (itemIndex !== -1) {
+      console.log(
+        'deleting',
+        userData['expiry_info'][expiryDate][itemIndex][itemName]
+      )
+      setDeletedItems(deletedItems.concat(itemName))
+    }
     try {
       const user = auth.currentUser
       if (!user) {
@@ -133,6 +124,96 @@ const Fridge = () => {
       console.error('Error deleting item:', error)
     }
   }
+  const Item = ({ itemName, itemDetails, date, urgent, allowDelete }) => {
+    const [clicked, setClicked] = useState(false)
+    const [borderColor, setBorderColor] = useState('transparent')
+    const [borderWidth, setBorderWidth] = useState('0px')
+
+    const handleClick = async () => {
+      if (allowDelete) {
+        if (!clicked) {
+          // Update the border color and width when clicked
+          setBorderColor('#000080') // Dark blue color
+          setBorderWidth('2px')
+        } else {
+          // Revert the border color and width to initial state
+          setBorderColor('transparent')
+          setBorderWidth('0px')
+        }
+        // Toggle the clicked state
+        setClicked(!clicked)
+        // Not clicked as the state hasn't updated yet
+        if (!clicked) {
+          console.log('Item clicked:', itemName)
+          await deleteItem(itemName, date)
+        }
+      }
+    }
+    if (!itemName) {
+      return null
+    }
+    if (urgent) {
+      return (
+        <div
+          key={itemName}
+          className="flex flex-row bg-white rounded-lg mb-4 p-4 relative m-4 "
+          onClick={handleClick}
+          style={{ borderColor: borderColor, borderWidth: borderWidth }}
+        >
+          <Tip className="absolute top-0 right-0" />
+          <img
+            src={itemDetails.image}
+            alt={itemName}
+            className="w-[25px] h-[25px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] lg:w-[60px] lg:h-[60px] xl:w-[75px] xl:h-[75px]"
+          />
+          <div className="flex flex-col">
+            <p className="text-xs lg:text-base md:text-sm sm:text-xs">
+              {itemName.charAt(0).toUpperCase() + itemName.slice(1)}
+            </p>
+            <p className="text-[8px] lg:text-xs md:text-[10px] sm:text-[8px]">
+              From Instacart on {formatDate(itemDetails.purchase_date)}
+            </p>
+            <div className="bg-[#F9E3E3] rounded-lg p-1 flex items-center text-[8px] lg:text-xs md:text-[10px] sm:text-[8px]">
+              <FaClock className="mr-2" />
+              <p>
+                Expected expiry in {calculateExpiryDate(date)}{' '}
+                {calculateExpiryDate(date) === 1 ? 'day' : 'days'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    } else {
+      return (
+        <div
+          key={itemName}
+          className="flex flex-col items-center bg-white rounded-lg mb-4 p-4"
+          onClick={handleClick}
+          style={{ borderColor: borderColor, borderWidth: borderWidth }}
+        >
+          <img
+            src={itemDetails.image}
+            alt={itemName}
+            className="w-[25px] h-[25px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] lg:w-[60px] lg:h-[60px] xl:w-[75px] xl:h-[75px]"
+          />
+
+          <p className="text-xs lg:text-base md:text-sm sm:text-xs">
+            {itemName}
+          </p>
+          <div className="bg-[#DAEEDC] rounded-lg p-1 text-[8px] lg:text-xs md:text-[10px] sm:text-[8px] flex items-center">
+            <FaClock className="mr-2" />
+            <p>
+              Expires in {Math.floor(calculateExpiryDate(date) / 7)}{' '}
+              {Math.floor(calculateExpiryDate(date) / 7) === 1
+                ? 'week'
+                : 'weeks'}
+            </p>
+          </div>
+        </div>
+      )
+    }
+  }
+
   return (
     <div
       className="flex flex-col p-0 relative content-center bg-[#E9F9FE] w-full h-screen bg-cover bg-center bg-no-repeat bg-fixed"
@@ -158,14 +239,14 @@ const Fridge = () => {
           >
             {/* Expiring Soon Section */}
             <div className="delete button pl-12">
-            <button
-              className="rounded-l-lg w-dvw flex items-center pl-5 pt-2 text-[#00799F] text-lg font-bold "
-              style={{ backgroundColor: 'rgba(225, 241, 246, 0.5)'}} // Added backgroundColor here
-              onClick={() => setAllowDelete(!allowDelete)}
-            >
-              <FaWindowClose className="mr-2" style={{ color: '#00799F' }} />
-              <p>DELETE</p>
-            </button>
+              <button
+                className="rounded-l-lg w-dvw flex items-center pl-5 pt-2 text-[#00799F] text-lg font-bold "
+                style={{ backgroundColor: 'rgba(225, 241, 246, 0.5)' }} // Added backgroundColor here
+                onClick={() => setAllowDelete(!allowDelete)}
+              >
+                <FaWindowClose className="mr-2" style={{ color: '#00799F' }} />
+                <p>{!allowDelete ? 'DELETE' : 'CANCEL'}</p>
+              </button>
             </div>
             <div className="p-4 pl-8">
               <p className="text-lg text-[#00799F]">Expiring Soon</p>
@@ -185,52 +266,13 @@ const Fridge = () => {
                         const itemDetails = item[itemName]
                         // Return JSX element
                         return (
-                          <div
-                            key={itemName}
-                            className="flex flex-row bg-white rounded-lg mb-4 p-4 relative m-4"
-                          >
-                            {allowDelete ? (
-                              <Tip
-                                className="absolute top-0 right-0"
-                                allowDelete={allowDelete}
-                              />
-                            ) : (
-                              <button
-                                onClick={() =>
-                                  console.log('clicked', itemName, date)
-                                }
-                              >
-                                <Tip
-                                  className="absolute top-0 right-0"
-                                  allowDelete={allowDelete}
-                                />
-                              </button>
-                            )}
-                            <img
-                              src={itemDetails.image}
-                              alt={itemName}
-                              className="w-[25px] h-[25px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] lg:w-[60px] lg:h-[60px] xl:w-[75px] xl:h-[75px]"
-                            />
-                            <div className="flex flex-col">
-                              <p className="text-xs lg:text-base md:text-sm sm:text-xs">
-                                {itemName.charAt(0).toUpperCase() +
-                                  itemName.slice(1)}
-                              </p>
-                              <p className="text-[8px] lg:text-xs md:text-[10px] sm:text-[8px]">
-                                From Instacart on{' '}
-                                {formatDate(itemDetails.purchase_date)}
-                              </p>
-                              <div className="bg-[#F9E3E3] rounded-lg p-1 flex items-center text-[8px] lg:text-xs md:text-[10px] sm:text-[8px]">
-                                <FaClock className="mr-2" />
-                                <p>
-                                  Expected expiry in {calculateExpiryDate(date)}{' '}
-                                  {calculateExpiryDate(date) === 1
-                                    ? 'day'
-                                    : 'days'}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                          <Item
+                            itemName={itemName}
+                            itemDetails={itemDetails}
+                            date={date}
+                            urgent={true}
+                            allowDelete={allowDelete}
+                          />
                         )
                       })
                     }
@@ -257,30 +299,13 @@ const Fridge = () => {
                         const itemDetails = item[itemName]
                         // Return JSX element
                         return (
-                          <div
-                            key={itemName}
-                            className="flex flex-col items-center bg-white rounded-lg mb-4 p-4"
-                          >
-                            <img
-                              src={itemDetails.image}
-                              alt={itemName}
-                              className="w-[25px] h-[25px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px] lg:w-[60px] lg:h-[60px] xl:w-[75px] xl:h-[75px]"
-                            />
-
-                            <p className="text-xs lg:text-base md:text-sm sm:text-xs">
-                              {itemName}
-                            </p>
-                            <div className="bg-[#DAEEDC] rounded-lg p-1 text-[8px] lg:text-xs md:text-[10px] sm:text-[8px] flex items-center">
-                              <FaClock className="mr-2" />
-                              <p>
-                                Expires in{' '}
-                                {Math.floor(calculateExpiryDate(date) / 7)}{' '}
-                                {Math.floor(calculateExpiryDate(date) / 7) === 1
-                                  ? 'week'
-                                  : 'weeks'}
-                              </p>
-                            </div>
-                          </div>
+                          <Item
+                            itemName={itemName}
+                            itemDetails={itemDetails}
+                            date={date}
+                            urgent={false}
+                            allowDelete={allowDelete}
+                          />
                         )
                       })
                     }

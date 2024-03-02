@@ -31,6 +31,31 @@ const Auth = () => {
   const [user, setUser] = useState(null)
 
   const [tokenFetched, setTokenFetched] = useState(false)
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [error, setError] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [numberChanged, setNumberChanged] = useState(false)
+
+  // Simple validation for phone number
+  const validatePhoneNumber = (input) => {
+    const phoneNumberPattern = /^\+?[1-9]\d{1,14}$/ // Simplistic regex for international phone numbers
+    return phoneNumberPattern.test(input)
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (validatePhoneNumber(phoneNumber)) {
+      editPhoneNumber()
+      setError('')
+      // You can proceed to use the phone number, e.g., send it to a backend
+    } else {
+      setError('Please enter a valid phone number.')
+    }
+  }
+
+  const handleChange = (event) => {
+    setPhoneNumber(event.target.value)
+  }
 
   const sendLogin = useCallback((uid) => {
     axios
@@ -87,6 +112,33 @@ const Auth = () => {
     }
   }
 
+  const editPhoneNumber = async () => {
+    if (auth.currentUser) {
+      const token = await auth.currentUser.getIdToken()
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      }
+      axios
+        .post(
+          `${process.env.REACT_APP_BACKEND_URL}/api/editPhoneNumber`,
+          { newPhoneNumber: phoneNumber },
+          {
+            headers: headers,
+          }
+        )
+        .then((response) => {
+          console.log('Response from server:', response.data)
+          if (response.status >= 200 && response.status < 300) {
+            setNumberChanged(true) // Update state to show success message
+            setShowForm(false) // Optionally hide the form
+          }
+        })
+        .catch((error) => {
+          console.error('There was an error sending the items:', error)
+        })
+    }
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -122,7 +174,7 @@ const Auth = () => {
               src="/Logo.png"
               alt="Company Logo"
               className="mx-auto"
-              style={{ maxWidth: '500px', marginBottom: '2rem' }}
+              style={{ maxWidth: '300px', marginBottom: '2rem' }}
             />
           </button>
         </div>
@@ -143,6 +195,43 @@ const Auth = () => {
               >
                 Sign Out
               </button>
+              {!showForm && (
+                <button
+                  className="bg-green-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  onClick={() => {
+                    setShowForm(!showForm)
+                  }}
+                >
+                  Add/Edit Phone Number
+                </button>
+              )}
+              {showForm && (
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex flex-col items-center space-y-4 p-4"
+                >
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={handleChange}
+                    placeholder="Enter your phone number"
+                    className="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
+                  >
+                    Submit
+                  </button>
+                  {error && <p className="text-red-500">{error}</p>}
+                </form>
+              )}
+              {!showForm && numberChanged && (
+                <p>
+                  You have successfully edited your number for SMS
+                  notifications.
+                </p>
+              )}
               <button
                 className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4"
                 onClick={() => navigate(-1)}

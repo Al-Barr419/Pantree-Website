@@ -1,16 +1,16 @@
-const cors = require("cors");
-require("dotenv").config();
-const express = require("express");
-const admin = require("firebase-admin");
-const serviceAccount = require("./fireBaseKey.json");
-const { add, format } = require("date-fns"); // For date manipulation
-const { createCustomToken } = require("./jwt");
-const { authAdmin } = require("./fireBase");
-const cron = require("node-cron");
-const twilio = require("twilio")(
-  process.env.TWILIO_TEST_ACCOUNT_SID,
-  process.env.TWILIO_TEST_AUTH_TOKEN
-);
+const cors = require('cors')
+require('dotenv').config()
+const express = require('express')
+const admin = require('firebase-admin')
+const serviceAccount = require('./fireBaseKey.json')
+const { add, format } = require('date-fns') // For date manipulation
+const { createCustomToken } = require('./jwt')
+const { authAdmin } = require('./fireBase')
+const cron = require('node-cron')
+const twilio = require('twilio')(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+)
 
 /*
 Assumes users collection is structured in the following format:
@@ -80,235 +80,142 @@ if (admin.apps.length === 0) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     // Optionally, specify your database URL here
-  });
+  })
 }
 
-const db = admin.firestore();
-const app = express();
-const port = 3001; // Use a different port than your React app
+const db = admin.firestore()
+const app = express()
+const port = 3001 // Use a different port than your React app
 // Middleware to parse JSON body
-app.use(express.json());
-app.use(cors());
+app.use(express.json())
+app.use(cors())
 
 // Middleware for authenticating token
 async function authenticateToken(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
-    return res.status(401).send("Access denied. No token provided.");
+    return res.status(401).send('Access denied. No token provided.')
   }
   try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    req.user = decodedToken;
-    next();
+    const decodedToken = await admin.auth().verifyIdToken(token)
+    req.user = decodedToken
+    next()
   } catch (error) {
-    res.status(400).send("Invalid token.");
+    res.status(400).send('Invalid token.')
   }
 }
 
 // Endpoint to fetch user data
-app.get("/api/user-data", authenticateToken, async (req, res) => {
-  const uid = req.user.uid; // Extract user UID from verified token
+app.get('/api/user-data', authenticateToken, async (req, res) => {
+  const uid = req.user.uid // Extract user UID from verified token
   try {
-    const userRef = admin.firestore().collection("users").doc(uid);
-    const doc = await userRef.get();
+    const userRef = admin.firestore().collection('users').doc(uid)
+    const doc = await userRef.get()
     if (!doc.exists) {
-      return res.status(404).send("User not found.");
+      return res.status(404).send('User not found.')
     }
-    const userData = doc.data();
-    res.json(userData); // Send user data as response
+    const userData = doc.data()
+    res.json(userData) // Send user data as response
   } catch (error) {
-    console.error("Error getting user data:", error);
-    res.status(500).send("Failed to fetch user data.");
+    console.error('Error getting user data:', error)
+    res.status(500).send('Failed to fetch user data.')
   }
-});
+})
 
-app.delete("/api/delete-item", authenticateToken, async (req, res) => {
-  const uid = req.user.uid; // Extract user UID from verified token
-  const { itemName, expiryDate } = req.body; // Assume these are passed in the request body
+app.delete('/api/delete-item', authenticateToken, async (req, res) => {
+  const uid = req.user.uid // Extract user UID from verified token
+  const { itemName, expiryDate } = req.body // Assume these are passed in the request body
 
   try {
-    const userRef = admin.firestore().collection("users").doc(uid);
-    const doc = await userRef.get();
+    const userRef = admin.firestore().collection('users').doc(uid)
+    const doc = await userRef.get()
     if (!doc.exists) {
-      return res.status(404).send("User not found.");
+      return res.status(404).send('User not found.')
     }
 
-    const userData = doc.data();
+    const userData = doc.data()
     if (userData.expiry_info && userData.expiry_info[expiryDate]) {
       // Assuming expiry_info[expiryDate] is an object where keys are item names
-      const items = userData.expiry_info[expiryDate];
-      if (items.hasOwnProperty(itemName)) {
-        delete items[itemName]; // Remove the item from the object
+      const items = userData.expiry_info[expiryDate]
+      // TEMP FIX USING INDEX
+      let itemIndex = items.indexOf(itemName)
+      items.forEach((item, i) => {
+        if (item.hasOwnProperty(itemName)) {
+          itemIndex = i
+        }
+      })
+      if (itemIndex === -1) {
+        return res.status(404).send('Item not found through indexing.')
+      }
+      if (items[itemIndex].hasOwnProperty(itemName)) {
+        delete items[itemIndex][itemName] // Remove the item from the object
         await userRef.update({
           [`expiry_info.${expiryDate}`]: items,
-        });
+        })
 
-        res.send("Item deleted successfully.");
+        res.send('Item deleted successfully.')
       } else {
-        res.status(404).send("Item not found.");
+        res.status(404).send('Item not found.', items)
       }
     } else {
-      res.status(404).send("Expiry date not found.");
+      res.status(404).send('Expiry date not found.')
     }
   } catch (error) {
-    console.error("Error deleting item:", error);
-    res.status(500).send("Failed to delete item.");
+    console.error('Error deleting item:', error)
+    res.status(500).send('Failed to delete item.')
   }
-});
+})
 
-app.get("/api/getExpiryInfo/:userId", async (req, res) => {
-  const { userId } = req.params; // Extract userId from request parameters
-
+// endpoint to add/edit phone number
+app.post('/api/editPhoneNumber', authenticateToken, async (req, res) => {
+  const uid = req.user.uid // Extract user UID from verified token
+  const { newPhoneNumber } = req.body
+  if (!newPhoneNumber) {
+    return res.status(400).send('No phone number provided.')
+  }
   try {
-    const userRef = db.collection("users").doc(userId);
-    const userDoc = await userRef.get();
-
-    if (!userDoc.exists) {
-      return res.status(404).send("User not found");
+    const userRef = admin.firestore().collection('users').doc(uid)
+    const doc = await userRef.get()
+    if (!doc.exists) {
+      return res.status(404).send('User not found.')
     }
-
-    const userData = userDoc.data();
-    // Initialize with existing data if present, or empty object if not
-    const currentPurchaseInfo = userData.purchase_info || {};
-    const currentExpiryInfo = userData.expiry_info || {};
-
-    for (const itemName of foodItems) {
-      const itemSnapshot = await db
-        .collection("items")
-        .where("names", "array-contains", itemName)
-        .get();
-      if (itemSnapshot.empty) {
-        console.log(`No matching items found for ${itemName}`);
-        continue; // Skip this item if not found
-      }
-
-      const itemData = itemSnapshot.docs[0].data();
-      const { exp_time, exp_unit } = itemData;
-      const expiryDate = add(currentDate, {
-        [exp_unit.toLowerCase()]: exp_time,
-      });
-      const formattedCurrentDate = format(
-        currentDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-      const formattedExpiryDate = format(
-        expiryDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-
-      // Merge purchase info
-      if (!currentPurchaseInfo[formattedCurrentDate]) {
-        currentPurchaseInfo[formattedCurrentDate] = [];
-      }
-      currentPurchaseInfo[formattedCurrentDate].push(itemName);
-
-      // Merge expiry info
-      if (!currentExpiryInfo[formattedExpiryDate]) {
-        currentExpiryInfo[formattedExpiryDate] = [];
-      }
-      currentExpiryInfo[formattedExpiryDate].push(itemName);
-    }
-
-    // Apply the merged updates
+    // Update the phone_number in userData, either adding or replacing it
     await userRef.update({
-      purchase_info: currentPurchaseInfo,
-      expiry_info: currentExpiryInfo,
-    });
+      phone_number: newPhoneNumber,
+    })
 
-    res.status(200).send("Purchase and expiry info updated successfully");
+    res.json({
+      message: 'Phone number updated successfully',
+    })
   } catch (error) {
-    console.error("Error updating user document:", error);
-    res.status(500).send("Internal Server Error");
+    console.error('Error updating user phone number:', error)
+    res.status(500).send('Failed to update user phone number.')
   }
-});
+})
 
-app.post("/api/updatePurchaseAndExpiry", async (req, res) => {
-  const { userId, foodItems } = req.body; // Assuming foodItems is an array of item names
-
-  if (!userId || !foodItems) {
-    return res.status(400).send("Missing userId or foodItems in request");
-  }
-
-  try {
-    const userRef = db.collection("users").doc(userId);
-    const currentDate = new Date();
-    const purchaseInfoUpdate = {};
-    const expiryInfoUpdate = {};
-
-    for (const itemName of foodItems) {
-      const itemSnapshot = await db
-        .collection("items")
-        .where("names", "array-contains", itemName)
-        .get();
-
-      if (itemSnapshot.empty) {
-        console.log(`No matching items found for ${itemName}`);
-        continue; // Skip this item if not found
-      }
-
-      const itemData = itemSnapshot.docs[0].data();
-      const { exp_time, exp_unit } = itemData;
-      const expiryDate = add(currentDate, {
-        [exp_unit.toLowerCase()]: exp_time,
-      });
-
-      // Update purchase info with current date
-      const formattedCurrentDate = format(
-        currentDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-      if (!purchaseInfoUpdate[formattedCurrentDate]) {
-        purchaseInfoUpdate[formattedCurrentDate] = [];
-      }
-      purchaseInfoUpdate[formattedCurrentDate].push(itemName);
-
-      // Update expiry info
-      const formattedExpiryDate = format(
-        expiryDate,
-        "EEE MMM dd yyyy HH:mm:ss 'GMT'xxx (zzzz)"
-      );
-      if (!expiryInfoUpdate[formattedExpiryDate]) {
-        expiryInfoUpdate[formattedExpiryDate] = [];
-      }
-      expiryInfoUpdate[formattedExpiryDate].push(itemName);
-    }
-
-    // Update user document
-    await userRef.update({
-      purchase_info: admin.firestore.FieldValue.arrayUnion(purchaseInfoUpdate),
-      expiry_info: admin.firestore.FieldValue.arrayUnion(expiryInfoUpdate),
-    });
-
-    res.status(200).send("Purchase and expiry info updated successfully");
-  } catch (error) {
-    console.error("Error updating user document:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello from the back-end!");
-});
+app.get('/', (req, res) => {
+  res.send('Hello from the back-end!')
+})
 
 app.listen(process.env.PORT || port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+  console.log(`Server listening at http://localhost:${port}`)
+})
 
 // Endpoint to add contact to SendGrid
-app.post("/add-contact", (req, res) => {
-  const client = require("@sendgrid/client");
-  client.setApiKey(process.env.SENDGRID_API_KEY);
+app.post('/add-contact', (req, res) => {
+  const client = require('@sendgrid/client')
+  client.setApiKey(process.env.SENDGRID_API_KEY)
 
   // Extract user details from request body
-  const { email, first_name, last_name } = req.body;
+  const { email, first_name, last_name } = req.body
 
   // Check if the necessary data is present
   if (!email || !first_name || !last_name) {
-    return res.status(400).send("Missing required fields");
+    return res.status(400).send('Missing required fields')
   }
 
   // Pantree mailing list id from sendgrid
-  const list_id = "5a868631-6949-488d-94b6-7a76469423d4";
+  const list_id = '5a868631-6949-488d-94b6-7a76469423d4'
 
   const data = {
     contacts: [
@@ -319,64 +226,68 @@ app.post("/add-contact", (req, res) => {
       },
     ],
     list_ids: [list_id],
-  };
+  }
 
   const request = {
     url: `/v3/marketing/contacts`,
-    method: "PUT",
+    method: 'PUT',
     body: data,
-  };
+  }
 
   client
     .request(request)
     .then(([response, body]) => {
-      console.log(response.statusCode);
-      console.log(response.body);
-      res.status(200).send("Contact added successfully");
+      console.log(response.statusCode)
+      console.log(response.body)
+      res.status(200).send('Contact added successfully')
     })
     .catch((error) => {
-      console.error(error);
-      res.status(500).send("Error adding contact");
-    });
-});
+      console.error(error)
+      res.status(500).send('Error adding contact')
+    })
+})
 
 // Scheduled text message for all users at 6 PM informing them when their groceries will expire.
-cron.schedule("0 18 * * *", async () => {
-  console.log("Checking for expiring food items...");
-  const usersRef = db.collection("users");
-  const snapshot = await usersRef.get();
+cron.schedule('0 18 * * *', async () => {
+  console.log('Checking for expiring food items...')
+  const usersRef = admin.firestore().collection('users')
+  const snapshot = await usersRef.get()
 
   snapshot.forEach((doc) => {
-    const userData = doc.data();
-    const phoneNumber = userData.phone_number; // Assuming phone_number is correctly formatted for SMS
-    const expiryInfo = userData.expiry_info || {};
-    const currentDate = new Date();
+    const userData = doc.data()
+    const phoneNumber = userData.phone_number // Assuming phone_number is correctly formatted for SMS
+    const expiryInfo = userData.expiry_info || {}
+    const currentDate = new Date()
 
     Object.keys(expiryInfo).forEach((expiryDate) => {
-      const date = new Date(expiryDate);
-      // Assuming you want to notify users of items expiring today or tomorrow
-      if (date >= currentDate) {
-        const diffTime = Math.abs(date - currentDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Calculate difference in days
-        const itemsExpiring = expiryInfo[expiryDate].join(", ");
-        const message = `Reminder: Your items ${itemsExpiring} will expire in ${diffDays} day(s).`;
+      const items = expiryInfo[expiryDate]
+      const date = new Date(expiryDate)
 
-        // Send SMS through Twilio
-        twilio.messages
-          .create({
-            body: message,
-            to: phoneNumber, // Text this number
-            from: "+12055024797", // From Twilio trial number
-          })
-          .then((message) => console.log(message.sid));
+      if (date >= currentDate && phoneNumber !== "") {
+        items.forEach((item) => {
+          const itemName = Object.keys(item)[0] // Get the name of the item
+          const diffTime = Math.abs(date - currentDate)
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) // Calculate difference in days
+          const message = `Reminder: Your item ${itemName} will expire in ${diffDays} day(s).`
+
+          // Send SMS through Twilio
+          twilio.messages
+            .create({
+              body: message,
+              to: phoneNumber, // Text this number
+              from: '+13653638018', // From a valid Twilio number
+            })
+            .then((message) => console.log(message.sid))
+            .catch((error) => console.error(error))
+        })
       }
-    });
-  });
-}); // Added closing bracket here
+    })
+  })
+})
 
-app.post("/generate-token", (req, res) => {
-  createCustomToken(req, res);
-});
+app.post('/generate-token', (req, res) => {
+  createCustomToken(req, res)
+})
 
 // TO CREATE CONTACT LIST
 

@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { useNavigate } from 'react-router-dom'
 // Team members data
 const teamMembers = [
   {
@@ -51,29 +51,32 @@ const teamMembers = [
     photoUrl: '/Claire_Hu.webp',
   },
   {
-    name: 'Emanuel Piccinini',
+    name: 'Emanuel Piccininni',
     title: 'Business Analyst',
     pronouns: 'he/him',
     photoUrl: '/Emanuel_Piccinini.webp',
   },
   {
     name: 'Janevra Pier',
-    title: 'Frosh Rep',
+    title: 'Designer',
     pronouns: 'she/her',
     photoUrl: '/Janevra_Pier.webp',
   },
 ]
 
 function AboutUs() {
+  const navigate = useNavigate()
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="logo text-center mt-4">
-        <img
-          src="/Logo.png"
-          alt="Company Logo"
-          className="mx-auto"
-          style={{ maxWidth: '300px', marginBottom: '2rem' }}
-        />
+        <button onClick={() => navigate('/')}>
+          <img
+            src="/Logo.png"
+            alt="Company Logo"
+            className="mx-auto"
+            style={{ maxWidth: '300px', marginBottom: '2rem' }}
+          />
+        </button>
       </div>
 
       <h2 className="text-3xl text-[#00566E] font-semibold mt-5 mb-3">
