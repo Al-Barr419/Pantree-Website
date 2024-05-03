@@ -50,21 +50,30 @@ const LandingPage = () => {
         style={{ backgroundImage: `url("/Fruits.png")` }}
       >
         <div className="flex flex-col justify-center items-center flex-grow">
+          <div className="logo text-center mt-4">
+            <button onClick={() => navigate('/')}>
+              <img
+                src="/Logo.png"
+                alt="Company Logo"
+                className="mx-auto max-w-[300px] sm:max-w-[500px] sm:mb-10"
+              />
+            </button>
+          </div>
+
+          <p className="text-xl text-[#00566E] text-center pt-3.5 font-anekTelugu">
+            Saving those blueberries you forgot about
+          </p>
           <button
-            className="absolute top-0 right-0 text-xl text-[#00536D] font-koulen bg-[#E1F1F699] rounded-lg p-3 shadow-xl"
+            className="mt-2 md:mt-0 md:absolute md:top-0 md:right-0 text-xl text-[#00536D] font-koulen bg-[#E1F1F699] rounded-lg p-3 shadow-xl"
             onClick={() => {
               navigate('/fridge')
             }}
           >
             View your Fridge
           </button>
-          <img src="/Logo.png" alt="Pantree Logo" width={500} height={500} />
-          <p className="text-xl text-[#00566E] text-center pt-3.5 font-anekTelugu">
-            Saving those blueberries you forgot about
-          </p>
-          <div className="flex justify-center gap-10 py-20">
+          <div className="flex flex-col justify-center gap-10 py-20 sm:flex-row">
             <button
-              className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow-xl"
+              className="-mt-16 sm:mt-0 text-4xl md:text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-6 sm:p-11 shadow-xl"
               onClick={() => {
                 window.open(
                   'https://chromewebstore.google.com/detail/pantree/fpoeoakglgbcnlggndmbjmaekpjahgdn',
@@ -74,17 +83,17 @@ const LandingPage = () => {
             >
               ADD PANTREE
               <br />
-              <span className="text-2xl text-[#00536D] font-anekTelugu font-semibold">
+              <span className="text-xl md:text-2xl text-[#00536D] font-anekTelugu font-semibold">
                 Your automatic fridge management app
               </span>
             </button>
             <button
-              className="text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-11 shadow-xl"
+              className="text-4xl md:text-5xl text-[#00536D] font-koulen bg-[#DFF4FA4D] rounded-3xl p-6 sm:p-11 shadow-xl"
               onClick={handleAboutUsClick}
             >
               ABOUT US
               <br />
-              <span className="text-2xl text-[#00536D] font-anekTelugu font-semibold">
+              <span className="text-xl md:text-2xl text-[#00536D] font-anekTelugu font-semibold">
                 Built by students
               </span>
             </button>

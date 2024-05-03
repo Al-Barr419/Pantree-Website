@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { auth } from "../Firebase";
+import React, { useState, useEffect, useCallback } from 'react'
+import { auth } from '../Firebase'
 import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
-} from "firebase/auth";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+} from 'firebase/auth'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Footer = () => {
   return (
@@ -21,41 +21,41 @@ const Footer = () => {
         No more food waste.
       </p>
     </footer>
-  );
-};
+  )
+}
 
 const Auth = () => {
-  const navigate = useNavigate();
-  const googleProvider = new GoogleAuthProvider();
+  const navigate = useNavigate()
+  const googleProvider = new GoogleAuthProvider()
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null)
 
-  const [tokenFetched, setTokenFetched] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [error, setError] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [numberChanged, setNumberChanged] = useState(false);
+  const [tokenFetched, setTokenFetched] = useState(false)
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [error, setError] = useState('')
+  const [showForm, setShowForm] = useState(false)
+  const [numberChanged, setNumberChanged] = useState(false)
 
   // Simple validation for phone number
   const validatePhoneNumber = (input) => {
-    const phoneNumberPattern = /^\+?[1-9]\d{1,14}$/; // Simplistic regex for international phone numbers
-    return phoneNumberPattern.test(input);
-  };
+    const phoneNumberPattern = /^\+?[1-9]\d{1,14}$/ // Simplistic regex for international phone numbers
+    return phoneNumberPattern.test(input)
+  }
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     if (validatePhoneNumber(phoneNumber)) {
-      editPhoneNumber();
-      setError("");
+      editPhoneNumber()
+      setError('')
       // You can proceed to use the phone number, e.g., send it to a backend
     } else {
-      setError("Please enter a valid phone number.");
+      setError('Please enter a valid phone number.')
     }
-  };
+  }
 
   const handleChange = (event) => {
-    setPhoneNumber(event.target.value);
-  };
+    setPhoneNumber(event.target.value)
+  }
 
   const sendLogin = useCallback((uid) => {
     axios
@@ -65,59 +65,59 @@ const Auth = () => {
         },
       })
       .then((response) => {
-        let tok = response.data.data.customToken;
-        setCustomTokenInQS(tok);
-        console.log(tok);
+        let tok = response.data.data.customToken
+        setCustomTokenInQS(tok)
+        console.log(tok)
       })
       .catch((error) => {
-        console.error("Error:", error);
-      });
-  }, []);
+        console.error('Error:', error)
+      })
+  }, [])
 
   const setCustomTokenInQS = (customToken) => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search)
 
-    urlParams.set("custom_token", customToken);
+    urlParams.set('custom_token', customToken)
 
     window.history.replaceState(
       {},
-      "",
+      '',
       `${window.location.pathname}?${urlParams}`
-    );
-  };
+    )
+  }
 
   const signOut = () => {
     auth.signOut().then(() => {
-      console.log("Signed Out");
-    });
-    setUser(null);
-  };
+      console.log('Signed Out')
+    })
+    setUser(null)
+  }
 
   const signInWithGoogle = () => {
-    console.log("Popup");
+    console.log('Popup')
     if (user) {
-      console.log("Already signed in");
+      console.log('Already signed in')
     } else {
       signInWithPopup(auth, googleProvider)
         .then(async (result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
-          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const credential = GoogleAuthProvider.credentialFromResult(result)
           // The signed-in user info.
-          setUser(result.user);
+          setUser(result.user)
           // IdP data available using getAdditionalUserInfo(result)
         })
         .catch((error) => {
-          console.error(error);
-        });
+          console.error(error)
+        })
     }
-  };
+  }
 
   const editPhoneNumber = async () => {
     if (auth.currentUser) {
-      const token = await auth.currentUser.getIdToken();
+      const token = await auth.currentUser.getIdToken()
       const headers = {
         Authorization: `Bearer ${token}`,
-      };
+      }
       axios
         .post(
           `${process.env.REACT_APP_BACKEND_URL}/api/editPhoneNumber`,
@@ -127,17 +127,17 @@ const Auth = () => {
           }
         )
         .then((response) => {
-          console.log("Response from server:", response.data);
+          console.log('Response from server:', response.data)
           if (response.status >= 200 && response.status < 300) {
-            setNumberChanged(true); // Update state to show success message
-            setShowForm(false); // Optionally hide the form
+            setNumberChanged(true) // Update state to show success message
+            setShowForm(false) // Optionally hide the form
           }
         })
         .catch((error) => {
-          console.error("There was an error sending the items:", error);
-        });
+          console.error('There was an error sending the items:', error)
+        })
     }
-  };
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -146,19 +146,19 @@ const Auth = () => {
           .getIdToken(/* forceRefresh */ true)
           .then(function (idToken) {
             if (!tokenFetched) {
-              sendLogin(idToken);
-              setTokenFetched(true);
+              sendLogin(idToken)
+              setTokenFetched(true)
             }
           })
           .catch(function (error) {
-            console.error(error);
-          });
-        console.log("Signed in", user);
-        setUser(user);
+            console.error(error)
+          })
+        console.log('Signed in', user)
+        setUser(user)
       }
-    });
-    return unsubscribe;
-  }, [sendLogin, tokenFetched]);
+    })
+    return unsubscribe
+  }, [sendLogin, tokenFetched])
 
   // signInWithGoogle();
 
@@ -166,15 +166,15 @@ const Auth = () => {
     <div className="flex flex-col min-h-screen">
       <div
         className="flex flex-col h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url("/Fruits.png")` }}
+        style={{ backgroundImage: `url("/Fruits2.png")` }}
       >
         <div className="logo text-center mt-4">
-          <button onClick={() => navigate("/")}>
+          <button onClick={() => navigate('/')}>
             <img
               src="/Logo.png"
               alt="Company Logo"
               className="mx-auto"
-              style={{ maxWidth: "500px", marginBottom: "2rem" }}
+              style={{ maxWidth: '300px', marginBottom: '2rem' }}
             />
           </button>
         </div>
@@ -199,7 +199,7 @@ const Auth = () => {
                 <button
                   className="bg-green-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4"
                   onClick={() => {
-                    setShowForm(!showForm);
+                    setShowForm(!showForm)
                   }}
                 >
                   Add/Edit Phone Number
@@ -244,7 +244,7 @@ const Auth = () => {
       </div>
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default Auth;
+export default Auth

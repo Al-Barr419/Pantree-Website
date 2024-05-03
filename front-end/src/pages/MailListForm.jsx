@@ -17,7 +17,7 @@ function MailListForm() {
     <div className="flex flex-col min-h-screen">
       <div
         className="flex flex-col h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url("/Fruits.png")` }}
+        style={{ backgroundImage: `url("/Fruits2.png")` }}
       >
         <div className="logo text-center mt-4">
           <button onClick={() => navigate('/')}>
@@ -25,7 +25,7 @@ function MailListForm() {
               src="/Logo.png"
               alt="Company Logo"
               className="mx-auto"
-              style={{ maxWidth: '500px', marginBottom: '2rem' }}
+              style={{ maxWidth: '300px', marginBottom: '2rem' }}
             />
           </button>
         </div>
